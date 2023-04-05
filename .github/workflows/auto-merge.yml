@@ -1,0 +1,47 @@
+name: automerge
+
+on:
+  schedule:
+    - cron:  '0 0 * * *'
+
+jobs:
+  merge:
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: 'recursive'
+        fetch-depth: 0
+    - name: Merge TCPP
+      run: |
+        git status
+        git config user.email "niam5+ci@post.com" && git config user.name "Niam5"
+        git remote add Cata https://github.com/The-Cataclysm-Preservation-Project/TrinityCore.git
+        git fetch Cata master
+        git merge -m "Merge TheCataclysmPreservationProject to ElunaCataPreservation [skip ci]" Cata/master
+        git status
+    - name: Dependencies
+      run: |
+        sudo apt-get update && sudo apt-get install -yq libboost-all-dev
+    - name: Setup
+      run: |
+        mkdir bin
+        cd bin
+        cmake ../ -DWITH_COREDEBUG=0 -DUSE_COREPCH=1 -DUSE_SCRIPTPCH=1 -DELUNA=1 -DTOOLS=1 -DSCRIPTS=static -DSERVERS=1 -DNOJEM=0 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=check_install -DBUILD_TESTING=1
+        cd ..
+    - name: Build
+      run: |
+        cd bin
+        make -j 4 -k && make install
+    - name: Unit tests
+      run: |
+        cd bin
+        make test
+    - name: Check executables
+      run: |
+        cd bin/check_install/bin
+        ./bnetserver --version
+        ./worldserver --version
+    - name: Push changes
+      run: |
+          git push --force
