@@ -53,6 +53,9 @@
 #include "WorldSocket.h"
 #include "WorldSocketMgr.h"
 #include "ZmqContext.h"
+#ifdef ELUNA
+#include "LuaEngine.h"
+#endif
 #include <openssl/crypto.h>
 #include <openssl/opensslv.h>
 #if defined(OPENSSL_VERSION_MAJOR) && (OPENSSL_VERSION_MAJOR >= 3)
@@ -310,6 +313,9 @@ extern int main(int argc, char** argv)
         sOutdoorPvPMgr->Die();                     // unload it before MapManager
         sMapMgr->UnloadAll();                      // unload all grids (including locked in memory)
         sTerrainMgr.UnloadAll();
+#ifdef ELUNA
+        Eluna::Uninitialize();
+#endif
     });
 
     // Start the Remote Access port (acceptor) if enabled

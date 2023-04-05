@@ -35,6 +35,9 @@
 #include "Vehicle.h"
 #include "World.h"
 #include "WorldPacket.h"
+#ifdef ELUNA
+#include "LuaEngine.h"
+#endif
 
 class Aura;
 
@@ -225,6 +228,11 @@ void WorldSession::HandlePartyInviteResponseOpcode(WorldPackets::Party::PartyInv
             SendPartyResult(PARTY_OP_INVITE, "", ERR_GROUP_FULL);
             return;
         }
+
+#ifdef ELUNA
+        if (!sEluna->OnMemberAccept(group, GetPlayer()))
+            return;
+#endif
 
         Player* leader = ObjectAccessor::FindPlayer(group->GetLeaderGUID());
 

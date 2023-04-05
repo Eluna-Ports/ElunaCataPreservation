@@ -566,6 +566,8 @@ typedef std::map<TempSummonGroupKey, std::vector<TempSummonData>> TempSummonData
 typedef std::unordered_map<uint32, CreatureLocale> CreatureLocaleContainer;
 typedef std::unordered_map<uint32, GameObjectLocale> GameObjectLocaleContainer;
 typedef std::unordered_map<uint32, ItemTemplate> ItemTemplateContainer;
+typedef std::unordered_map<uint32, ItemLocale> ItemLocaleContainer;
+typedef std::unordered_map<uint32, ItemSetNameLocale> ItemSetNameLocaleContainer;
 typedef std::unordered_map<uint32, QuestLocale> QuestLocaleContainer;
 typedef std::unordered_map<uint32, NpcTextLocale> NpcTextLocaleContainer;
 typedef std::unordered_map<uint32, PageTextLocale> PageTextLocaleContainer;
@@ -1415,6 +1417,18 @@ class TC_GAME_API ObjectMgr
             if (itr == _gameObjectLocaleStore.end()) return nullptr;
             return &itr->second;
         }
+        ItemLocale const* GetItemLocale(uint32 entry) const
+        {
+            ItemLocaleContainer::const_iterator itr = _itemLocaleStore.find(entry);
+            if (itr == _itemLocaleStore.end()) return nullptr;
+            return &itr->second;
+        }
+        ItemSetNameLocale const* GetItemSetNameLocale(uint32 entry) const
+        {
+            ItemSetNameLocaleContainer::const_iterator itr = _itemSetNameLocaleStore.find(entry);
+            if (itr == _itemSetNameLocaleStore.end())return nullptr;
+            return &itr->second;
+        }
         QuestLocale const* GetQuestLocale(uint32 entry) const
         {
             QuestLocaleContainer::const_iterator itr = _questLocaleStore.find(entry);
@@ -1760,6 +1774,8 @@ class TC_GAME_API ObjectMgr
 
         BroadcastTextContainer _broadcastTextStore;
         ItemTemplateContainer _itemTemplateStore;
+        ItemLocaleContainer _itemLocaleStore;
+        ItemSetNameLocaleContainer _itemSetNameLocaleStore;
         QuestLocaleContainer _questLocaleStore;
         NpcTextLocaleContainer _npcTextLocaleStore;
         PageTextLocaleContainer _pageTextLocaleStore;

@@ -32,6 +32,9 @@
 #include "ScriptMgr.h"
 #include "SHA1.h"
 #include "World.h"
+#ifdef ELUNA
+#include "LuaEngine.h"
+#endif
 #include <zlib.h>
 #include <memory>
 

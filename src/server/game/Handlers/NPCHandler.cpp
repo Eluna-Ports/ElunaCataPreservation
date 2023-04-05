@@ -41,6 +41,9 @@
 #include "Trainer.h"
 #include "World.h"
 #include "WorldPacket.h"
+#ifdef ELUNA
+#include "LuaEngine.h"
+#endif
 
 void WorldSession::HandleTabardVendorActivateOpcode(WorldPacket& recvData)
 {
@@ -197,6 +200,9 @@ void WorldSession::HandleGossipHelloOpcode(WorldPackets::NPC::Hello& packet)
 
 
     _player->PlayerTalkClass->ClearMenus();
+#ifdef ELUNA
+    if (!sEluna->OnGossipHello(_player, unit))
+#endif
     if (!unit->AI()->GossipHello(_player))
     {
 //        _player->TalkedToCreature(unit->GetEntry(), unit->GetGUID());

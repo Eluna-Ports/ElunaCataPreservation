@@ -33,6 +33,9 @@
 #include "ScriptMgr.h"
 #include "World.h"
 #include <boost/algorithm/string/replace.hpp>
+#ifdef ELUNA
+#include "LuaEngine.h"
+#endif
 
 // Lazy loading of the command table cache from commands and the
 // ScriptMgr should be thread safe since the player commands,
@@ -341,6 +344,10 @@ bool ChatHandler::ExecuteCommandInTable(std::vector<ChatCommand> const& table, c
         // some commands have custom error messages. Don't send the default one in these cases.
         else if (!HasSentErrorMessage())
         {
+#ifdef ELUNA
+            //if (!sEluna->OnCommand(handler.IsConsole() ? NULL : handler.GetSession()->GetPlayer(), std::string(cmdStr).c_str()))
+                //return true;
+#endif
             if (!table[i].Help.empty())
                 SendSysMessage(table[i].Help.c_str());
             else
@@ -350,6 +357,11 @@ bool ChatHandler::ExecuteCommandInTable(std::vector<ChatCommand> const& table, c
 
         return true;
     }
+
+#ifdef ELUNA
+    //if (!sEluna->OnCommand(handler.IsConsole() ? NULL : handler.GetSession()->GetPlayer(), std::string(cmdStr).c_str()))
+        //return true;
+#endif
 
     return false;
 }

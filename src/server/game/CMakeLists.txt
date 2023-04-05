@@ -8,11 +8,15 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
+# Exclude files in the LuaEngine directory for Mangos, CMangos and VMangos
 CollectSourceFiles(
   ${CMAKE_CURRENT_SOURCE_DIR}
   PRIVATE_SOURCES
   # Exclude
-  ${CMAKE_CURRENT_SOURCE_DIR}/PrecompiledHeaders)
+  ${CMAKE_CURRENT_SOURCE_DIR}/PrecompiledHeaders
+  ${CMAKE_CURRENT_SOURCE_DIR}/LuaEngine/Mangos
+  ${CMAKE_CURRENT_SOURCE_DIR}/LuaEngine/CMangos
+  ${CMAKE_CURRENT_SOURCE_DIR}/LuaEngine/VMangos)
 
 if(USE_COREPCH)
   set(PRIVATE_PCH_HEADER PrecompiledHeaders/gamePCH.h)
@@ -22,11 +26,15 @@ GroupSources(${CMAKE_CURRENT_SOURCE_DIR})
 
 add_definitions(-DTRINITY_API_EXPORT_GAME)
 
+# Exclude files in the LuaEngine directory for Mangos, CMangos and VMangos
 CollectIncludeDirectories(
   ${CMAKE_CURRENT_SOURCE_DIR}
   PUBLIC_INCLUDES
   # Exclude
-  ${CMAKE_CURRENT_SOURCE_DIR}/PrecompiledHeaders)
+  ${CMAKE_CURRENT_SOURCE_DIR}/PrecompiledHeaders
+  ${CMAKE_CURRENT_SOURCE_DIR}/LuaEngine/Mangos
+  ${CMAKE_CURRENT_SOURCE_DIR}/LuaEngine/CMangos
+  ${CMAKE_CURRENT_SOURCE_DIR}/LuaEngine/VMangos)
 
 # Provide an interface target for the game project to allow
 # dependent projects to build meanwhile.
@@ -85,4 +93,28 @@ endif()
 # Generate precompiled header
 if(USE_COREPCH)
   add_cxx_pch(game ${PRIVATE_PCH_HEADER})
+endif ()
+
+if(ELUNA)
+  if(WIN32)
+    if (MSVC)
+      add_custom_command(TARGET game
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/bin/$(ConfigurationName)/lua_scripts/extensions/
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/LuaEngine/extensions ${CMAKE_BINARY_DIR}/bin/$(ConfigurationName)/lua_scripts/extensions/
+      )
+    elseif(MINGW)
+      add_custom_command(TARGET game
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/bin/lua_scripts/extensions/
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/LuaEngine/extensions ${CMAKE_BINARY_DIR}/bin/lua_scripts/extensions/
+      )
+    endif()
+  endif()
+
+  if(UNIX)
+    install(DIRECTORY LuaEngine/extensions DESTINATION bin/lua_scripts/)
+  elseif(WIN32)
+    install(DIRECTORY LuaEngine/extensions DESTINATION "${CMAKE_BINARY_DIR}/bin/$(ConfigurationName)/lua_scripts/")
+  endif()
 endif()

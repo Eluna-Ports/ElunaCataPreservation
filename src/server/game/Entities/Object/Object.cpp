@@ -59,6 +59,10 @@
 #include "WaypointMovementGenerator.h"
 #include "World.h"
 #include "WorldPacket.h"
+#ifdef ELUNA
+#include "LuaEngine.h"
+#include "ElunaEventMgr.h"
+#endif
 
 constexpr float VisibilityDistances[AsUnderlyingType(VisibilityDistanceType::Max)] =
 {
@@ -88,6 +92,10 @@ Object::Object()
 
 WorldObject::~WorldObject()
 {
+#ifdef ELUNA
+    delete elunaEvents;
+    elunaEvents = NULL;
+#endif
     // this may happen because there are many !create/delete
     if (IsWorldObject() && m_currMap)
     {
@@ -1122,6 +1130,9 @@ bool Object::PrintIndexError(uint32 index, bool set) const
 }
 
 WorldObject::WorldObject(bool isWorldObject) : Object(), WorldLocation(), LastUsedScriptID(0),
+#ifdef ELUNA
+elunaEvents(NULL),
+#endif
 m_movementInfo(), m_name(""), m_isActive(false), m_isFarVisible(false), m_isWorldObject(isWorldObject), m_zoneScript(nullptr),
 m_transport(nullptr), m_zoneId(0), m_areaId(0), m_staticFloorZ(VMAP_INVALID_HEIGHT), m_outdoors(true), m_liquidStatus(LIQUID_MAP_NO_WATER),
 m_wmoGroupID(0), m_currMap(nullptr), m_InstanceId(0), _dbPhase(0), m_notifyflags(0),
@@ -1202,6 +1213,13 @@ void WorldObject::CleanupsBeforeDelete(bool /*finalCleanup*/)
 void WorldObject::_Create(ObjectGuid::LowType guidlow, HighGuid guidhigh)
 {
     Object::_Create(guidlow, 0, guidhigh);
+}
+
+void WorldObject::Update(uint32 time_diff)
+{
+#ifdef ELUNA
+    elunaEvents->Update(time_diff);
+#endif
 }
 
 void WorldObject::UpdatePositionData()
@@ -1962,6 +1980,12 @@ void WorldObject::SetMap(Map* map)
     m_currMap = map;
     m_mapId = map->GetId();
     m_InstanceId = map->GetInstanceId();
+
+#ifdef ELUNA
+    if (!elunaEvents)
+        elunaEvents = new ElunaEventProcessor(&Eluna::GEluna, this);
+#endif
+
     if (IsWorldObject())
         m_currMap->AddWorldObject(this);
 }
