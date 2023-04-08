@@ -67,7 +67,7 @@ struct npc_deadmines_defias_watcher : public ScriptedAI
             me->SetFaction(FACTION_CONTROLLABLE);
             DoCastSelf(SPELL_ON_FIRE);
             DoCastAOE(SPELL_ENERGIZE);
-            me->setRegeneratingHealth(false);
+            me->SetRegenerateHealth(false);
             _isOnFire = true;
         }
     }

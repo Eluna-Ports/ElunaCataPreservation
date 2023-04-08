@@ -1469,7 +1469,7 @@ class spell_dru_ferocious_bite : public SpellScript
         if (GetCaster()->GetTypeId() != TYPEID_PLAYER)
             return false;
 
-        if (GetCaster()->ToPlayer()->getClass() != CLASS_DRUID)
+        if (GetCaster()->ToPlayer()->GetClass() != CLASS_DRUID)
             return false;
 
         return true;
@@ -2051,7 +2051,7 @@ class spell_dru_entangling_roots : public AuraScript
             return;
 
         // Every two level difference increase or reduce the chance of breaking. Tree of Life enhances this effect
-        int16 offset = (caster->getLevel() - GetTarget()->getLevel()) / 2;
+        int16 offset = (caster->GetLevel() - GetTarget()->GetLevel()) / 2;
         _allowedProcs = std::max<int16>(MINIMUM_PROCS, DEFAULT_PROCS + offset);
         if (caster->GetShapeshiftForm() == FORM_TREE)
             ++_allowedProcs;

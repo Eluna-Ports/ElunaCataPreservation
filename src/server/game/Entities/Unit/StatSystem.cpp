@@ -310,7 +310,7 @@ float Player::GetHealthBonusFromStamina()
 {
     // Taken from PaperDollFrame.lua - 4.3.4.15595
     float ratio = 10.0f;
-    if (gtOCTHpPerStaminaEntry const* hpBase = sGtOCTHpPerStaminaStore.LookupEntry((getClass() - 1) * GT_MAX_LEVEL + getLevel() - 1))
+    if (gtOCTHpPerStaminaEntry const* hpBase = sGtOCTHpPerStaminaStore.LookupEntry((GetClass() - 1) * GT_MAX_LEVEL + GetLevel() - 1))
         ratio = hpBase->ratio;
 
     float stamina = GetStat(STAT_STAMINA);
@@ -345,7 +345,7 @@ void Player::UpdateMaxHealth()
 
 uint32 Player::GetPowerIndex(Powers power) const
 {
-    return sDBCManager.GetPowerIndexByClass(power, getClass());
+    return sDBCManager.GetPowerIndexByClass(power, GetClass());
 }
 
 void Player::UpdateMaxPower(Powers power)
@@ -369,9 +369,9 @@ void Player::UpdateMaxPower(Powers power)
 void Player::UpdateAttackPowerAndDamage(bool ranged)
 {
     float val2 = 0.0f;
-    float level = float(getLevel());
+    float level = float(GetLevel());
 
-    ChrClassesEntry const* entry = sChrClassesStore.LookupEntry(getClass());
+    ChrClassesEntry const* entry = sChrClassesStore.LookupEntry(GetClass());
     UnitMods unitMod = ranged ? UNIT_MOD_ATTACK_POWER_RANGED : UNIT_MOD_ATTACK_POWER;
 
     uint16 index = ranged ? UNIT_FIELD_RANGED_ATTACK_POWER : UNIT_FIELD_ATTACK_POWER;
@@ -664,7 +664,7 @@ void Player::UpdateParryPercentage()
     {
     // No parry
     float value = 0.0f;
-    uint32 pclass = getClass() - 1;
+    uint32 pclass = GetClass() - 1;
     if (CanParry() && parry_cap[pclass] > 0.0f)
     {
         float nondiminishing  = 5.0f;
@@ -673,7 +673,7 @@ void Player::UpdateParryPercentage()
         // Parry from SPELL_AURA_MOD_PARRY_PERCENT aura
         nondiminishing += GetTotalAuraModifier(SPELL_AURA_MOD_PARRY_PERCENT);
         // apply diminishing formula to diminishing parry chance
-        value = CalculateDiminishingReturns(parry_cap, getClass(), nondiminishing, diminishing);
+        value = CalculateDiminishingReturns(parry_cap, GetClass(), nondiminishing, diminishing);
 
         if (sWorld->getBoolConfig(CONFIG_STATS_LIMITS_ENABLE))
              value = value > sWorld->getFloatConfig(CONFIG_STATS_LIMITS_PARRY) ? sWorld->getFloatConfig(CONFIG_STATS_LIMITS_PARRY) : value;
@@ -707,7 +707,7 @@ void Player::UpdateDodgePercentage()
     // Dodge from rating
     diminishing += GetRatingBonusValue(CR_DODGE);
     // apply diminishing formula to diminishing dodge chance
-    float value = CalculateDiminishingReturns(dodge_cap, getClass(), nondiminishing, diminishing);
+    float value = CalculateDiminishingReturns(dodge_cap, GetClass(), nondiminishing, diminishing);
 
     if (sWorld->getBoolConfig(CONFIG_STATS_LIMITS_ENABLE))
          value = value > sWorld->getFloatConfig(CONFIG_STATS_LIMITS_DODGE) ? sWorld->getFloatConfig(CONFIG_STATS_LIMITS_DODGE) : value;

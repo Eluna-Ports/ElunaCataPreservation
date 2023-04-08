@@ -71,7 +71,7 @@ m_masterLooterGuid(), m_subGroupsCounts(nullptr), m_guid(), m_counter(0), m_dbSt
 {
     m_disenchantInfo.Initialize();
 
-    for (uint8 i = 0; i < TARGETICONCOUNT; ++i)
+    for (uint8 i = 0; i < TARGET_ICONS_COUNT; ++i)
         m_targetIcons[i].Clear();
 }
 
@@ -179,7 +179,7 @@ void Group::LoadGroupFromDB(Field* fields)
     m_looterGuid = ObjectGuid(HighGuid::Player, fields[2].GetUInt32());
     m_lootThreshold = ItemQualities(fields[3].GetUInt8());
 
-    for (uint8 i = 0; i < TARGETICONCOUNT; ++i)
+    for (uint8 i = 0; i < TARGET_ICONS_COUNT; ++i)
         m_targetIcons[i].Set(fields[4 + i].GetUInt64());
 
     m_groupFlags = GroupFlags(fields[12].GetUInt8());
@@ -400,7 +400,7 @@ bool Group::AddMember(Player* player)
         bool groupFound = false;
         for (; subGroup < MAX_RAID_SUBGROUPS; ++subGroup)
         {
-            if (m_subGroupsCounts[subGroup] < MAXGROUPSIZE)
+            if (m_subGroupsCounts[subGroup] < MAX_GROUP_SIZE)
             {
                 groupFound = true;
                 break;
@@ -438,7 +438,7 @@ bool Group::AddMember(Player* player)
 
     if (!isRaidGroup())                                      // reset targetIcons for non-raid-groups
     {
-        for (uint8 i = 0; i < TARGETICONCOUNT; ++i)
+        for (uint8 i = 0; i < TARGET_ICONS_COUNT; ++i)
             m_targetIcons[i].Clear();
     }
 
@@ -467,7 +467,7 @@ bool Group::AddMember(Player* player)
         player->ResetInstances(INSTANCE_RESET_GROUP_JOIN, false);
         player->ResetInstances(INSTANCE_RESET_GROUP_JOIN, true);
 
-        if (player->getLevel() >= LEVELREQUIREMENT_HEROIC)
+        if (player->GetLevel() >= LEVELREQUIREMENT_HEROIC)
         {
             if (player->GetDungeonDifficulty() != GetDungeonDifficulty())
             {
@@ -1615,12 +1615,12 @@ void Group::CountTheRoll(Rolls::iterator rollI, Map* allowedMap)
 
 void Group::SetTargetIcon(uint8 id, ObjectGuid whoGuid, ObjectGuid targetGuid)
 {
-    if (id >= TARGETICONCOUNT)
+    if (id >= TARGET_ICONS_COUNT)
         return;
 
     // clean other icons
     if (targetGuid)
-        for (int i=0; i<TARGETICONCOUNT; ++i)
+        for (int i=0; i<TARGET_ICONS_COUNT; ++i)
             if (m_targetIcons[i] == targetGuid)
                 SetTargetIcon(i, ObjectGuid::Empty, ObjectGuid::Empty);
 
@@ -1639,10 +1639,10 @@ void Group::SendTargetIconList(WorldSession* session)
     if (!session)
         return;
 
-    WorldPacket data(MSG_RAID_TARGET_UPDATE, (1+TARGETICONCOUNT*9));
+    WorldPacket data(MSG_RAID_TARGET_UPDATE, (1+TARGET_ICONS_COUNT*9));
     data << uint8(1);                                       // list targets
 
-    for (uint8 i = 0; i < TARGETICONCOUNT; ++i)
+    for (uint8 i = 0; i < TARGET_ICONS_COUNT; ++i)
     {
         if (m_targetIcons[i].IsEmpty())
             continue;
@@ -1991,7 +1991,7 @@ bool Group::MemberLevelIsInRange(uint32 levelMin, uint32 levelMax)
 {
     for (auto itr : m_memberSlots)
         if (Player* member = ObjectAccessor::FindPlayer(itr.guid))
-            if (member->getLevel() < levelMin || member->getLevel() > levelMax)
+            if (member->GetLevel() < levelMin || member->GetLevel() > levelMax)
                 return false;
 
     return true;
@@ -2172,7 +2172,7 @@ GroupJoinBattlegroundResult Group::CanJoinBattlegroundQueue(Battleground const* 
     if (!reference)
         return ERR_BATTLEGROUND_JOIN_FAILED;
 
-    PvPDifficultyEntry const* bracketEntry = sDBCManager.GetBattlegroundBracketByLevel(bgOrTemplate->GetMapId(), reference->getLevel());
+    PvPDifficultyEntry const* bracketEntry = sDBCManager.GetBattlegroundBracketByLevel(bgOrTemplate->GetMapId(), reference->GetLevel());
     if (!bracketEntry)
         return ERR_BATTLEGROUND_JOIN_FAILED;
 
@@ -2193,7 +2193,7 @@ GroupJoinBattlegroundResult Group::CanJoinBattlegroundQueue(Battleground const* 
         if (member->GetTeam() != team)
             return ERR_BATTLEGROUND_JOIN_TIMED_OUT;
         // not in the same battleground level braket, don't let join
-        PvPDifficultyEntry const* memberBracketEntry = sDBCManager.GetBattlegroundBracketByLevel(bracketEntry->MapID, member->getLevel());
+        PvPDifficultyEntry const* memberBracketEntry = sDBCManager.GetBattlegroundBracketByLevel(bracketEntry->MapID, member->GetLevel());
         if (memberBracketEntry != bracketEntry)
             return ERR_BATTLEGROUND_JOIN_RANGE_INDEX;
         // don't let join rated matches if the arena team id doesn't match
@@ -2589,7 +2589,7 @@ uint8 Group::GetLfgRoles(ObjectGuid guid)
 
 bool Group::IsFull() const
 {
-    return isRaidGroup() ? (m_memberSlots.size() >= MAXRAIDSIZE) : (m_memberSlots.size() >= MAXGROUPSIZE);
+    return isRaidGroup() ? (m_memberSlots.size() >= MAXRAIDSIZE) : (m_memberSlots.size() >= MAX_GROUP_SIZE);
 }
 
 bool Group::isLFGGroup() const
@@ -2708,7 +2708,7 @@ bool Group::SameSubGroup(ObjectGuid guid1, MemberSlot const* slot2) const
 
 bool Group::HasFreeSlotSubGroup(uint8 subgroup) const
 {
-    return (m_subGroupsCounts && m_subGroupsCounts[subgroup] < MAXGROUPSIZE);
+    return (m_subGroupsCounts && m_subGroupsCounts[subgroup] < MAX_GROUP_SIZE);
 }
 
 

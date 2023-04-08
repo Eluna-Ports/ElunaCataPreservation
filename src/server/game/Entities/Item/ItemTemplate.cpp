@@ -193,7 +193,7 @@ uint32 ItemTemplate::GetStatValue(uint32 index, Player const* owner /*= nullptr*
 
     ScalingStatDistributionEntry const* ssd = GetScalingStatDistribution() ? sScalingStatDistributionStore.LookupEntry(GetScalingStatDistribution()) : nullptr;
     // req. check at equip, but allow use for extended range if range limit max level, set proper level
-    uint32 ssdLevel = owner->getLevel();
+    uint32 ssdLevel = owner->GetLevel();
 
     if (ssd && ssdLevel > ssd->Maxlevel)
         ssdLevel = ssd->Maxlevel;

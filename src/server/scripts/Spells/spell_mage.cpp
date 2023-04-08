@@ -361,7 +361,7 @@ class spell_mage_conjure_refreshment : public SpellScript
 
     void HandleDummy(SpellEffIndex /*effIndex*/)
     {
-        uint8 level = GetHitUnit()->getLevel();
+        uint8 level = GetHitUnit()->GetLevel();
         for (uint8 i = 0; i < MAX_CONJURE_REFRESHMENT_SPELLS; ++i)
         {
             ConjureRefreshmentData const& spellData = _conjureData[i];

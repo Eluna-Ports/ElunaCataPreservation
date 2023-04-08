@@ -245,7 +245,7 @@ uint32 Quest::GetXPReward(Player const* player) const
     if (!player)
         return 0;
 
-    return Quest::CalcXPReward(player->getLevel(), _level, _rewardXPDifficulty);
+    return Quest::CalcXPReward(player->GetLevel(), _level, _rewardXPDifficulty);
 }
 
 /*static*/ uint32 Quest::CalcXPReward(uint8 playerLevel, int32 targetLevel, uint8 xpDifficulty)

@@ -482,11 +482,11 @@ void LFGMgr::JoinLfg(Player* player, uint8 roles, LfgDungeonSet& dungeons, const
         joinData.result = LFG_JOIN_NOT_MEET_REQS;
     else if (player->HasAura(9454)) // check Freeze debuff
         joinData.result = LFG_JOIN_NOT_MEET_REQS;
-    else if (!CanPerformSelectedRoles(player->getClass(), roles))
+    else if (!CanPerformSelectedRoles(player->GetClass(), roles))
         joinData.result = LFG_JOIN_INTERNAL_ERROR;
     else if (grp)
     {
-        if (grp->GetMembersCount() > MAXGROUPSIZE)
+        if (grp->GetMembersCount() > MAX_GROUP_SIZE)
             joinData.result = LFG_JOIN_TOO_MUCH_MEMBERS;
         else
         {
@@ -1574,7 +1574,7 @@ void LFGMgr::FinishDungeon(ObjectGuid gguid, const uint32 dungeonId, Map const* 
         if (dungeon->difficulty == DUNGEON_DIFFICULTY_HEROIC)
             player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_USE_LFD_TO_GROUP_WITH_PLAYERS, 1);
 
-        LfgReward const* reward = GetRandomDungeonReward(rDungeonId, player->getLevel());
+        LfgReward const* reward = GetRandomDungeonReward(rDungeonId, player->GetLevel());
         if (!reward)
             continue;
 
@@ -1781,7 +1781,7 @@ LfgLockMap const LFGMgr::GetLockedDungeons(ObjectGuid guid)
         return lock;
     }
 
-    uint8 level = player->getLevel();
+    uint8 level = player->GetLevel();
     uint8 expansion = player->GetSession()->GetExpansion();
     LfgDungeonSet const& dungeons = GetDungeonsByRandom(0);
     bool denyJoin = !player->GetSession()->HasPermission(rbac::RBAC_PERM_JOIN_DUNGEON_FINDER);

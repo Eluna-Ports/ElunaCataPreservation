@@ -33,7 +33,7 @@ void WorldSession::HandleLfgJoinOpcode(WorldPackets::LFG::LFGJoin& lfgJoin)
 {
     if (!sLFGMgr->isOptionEnabled(lfg::LFG_OPTION_ENABLE_DUNGEON_FINDER | lfg::LFG_OPTION_ENABLE_RAID_BROWSER) ||
         (GetPlayer()->GetGroup() && GetPlayer()->GetGroup()->GetLeaderGUID() != GetPlayer()->GetGUID() &&
-        (GetPlayer()->GetGroup()->GetMembersCount() == MAXGROUPSIZE || !GetPlayer()->GetGroup()->isLFGGroup())))
+        (GetPlayer()->GetGroup()->GetMembersCount() == MAX_GROUP_SIZE || !GetPlayer()->GetGroup()->isLFGGroup())))
         return;
 
     if (!lfgJoin.Slots.size())
@@ -89,7 +89,7 @@ void WorldSession::HandleLfgSetRolesOpcode(WorldPackets::LFG::LFGSetRoles& lfgSe
         gguid.ToString().c_str(), GetPlayerInfo().c_str(), lfgSetRoles.RolesDesired);
 
     // Role validation
-    if (!sLFGMgr->CanPerformSelectedRoles(GetPlayer()->getClass(), lfgSetRoles.RolesDesired))
+    if (!sLFGMgr->CanPerformSelectedRoles(GetPlayer()->GetClass(), lfgSetRoles.RolesDesired))
         lfgSetRoles.RolesDesired = 0;
 
     sLFGMgr->UpdateRoleCheck(gguid, guid, lfgSetRoles.RolesDesired);
@@ -133,7 +133,7 @@ void WorldSession::SendLfgPlayerLockInfo()
     TC_LOG_DEBUG("lfg", "SMSG_LFG_PLAYER_INFO %s", GetPlayerInfo().c_str());
 
     // Get Random dungeons that can be done at a certain level and expansion
-    uint8 level = _player->getLevel();
+    uint8 level = _player->GetLevel();
     lfg::LfgDungeonSet const& randomDungeons = sLFGMgr->GetRandomAndSeasonalDungeons(level, GetExpansion());
 
     WorldPackets::LFG::LFGPlayerInfo lfgPlayerInfo;
@@ -194,7 +194,7 @@ void WorldSession::SendLfgPlayerLockInfo()
         if (currentQuest)
         {
             playerDungeonInfo.Rewards.RewardMoney = currentQuest->GetRewOrReqMoney(_player);
-            playerDungeonInfo.Rewards.RewardXP = _player->getLevel() < sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL) ? currentQuest->GetXPReward(_player) : 0;
+            playerDungeonInfo.Rewards.RewardXP = _player->GetLevel() < sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL) ? currentQuest->GetXPReward(_player) : 0;
             for (uint8 i = 0; i < QUEST_REWARDS_COUNT; ++i)
                 if (uint32 itemId = currentQuest->RewardItemId[i])
                     playerDungeonInfo.Rewards.Item.emplace_back(itemId, currentQuest->RewardItemIdCount[i]);
@@ -214,7 +214,7 @@ void WorldSession::SendLfgPlayerLockInfo()
         {
             playerDungeonInfo.ShortageEligible = true;
             playerDungeonInfo.ShortageReward.RewardMoney = shortageQuest->GetRewOrReqMoney(_player);;
-            playerDungeonInfo.ShortageReward.RewardXP = _player->getLevel() < sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL) ? shortageQuest->GetXPReward(_player) : 0;
+            playerDungeonInfo.ShortageReward.RewardXP = _player->GetLevel() < sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL) ? shortageQuest->GetXPReward(_player) : 0;
             for (uint8 i = 0; i < QUEST_REWARDS_COUNT; ++i)
                 if (uint32 itemId = shortageQuest->RewardItemId[i])
                     playerDungeonInfo.ShortageReward.Item.emplace_back(itemId, shortageQuest->RewardItemIdCount[i]);
@@ -412,7 +412,7 @@ void WorldSession::SendLfgRoleCheckUpdate(lfg::LfgRoleCheck const& roleCheck)
     {
         // Leader info MUST be sent 1st :S
         uint8 roles = roleCheck.roles.find(roleCheck.leader)->second;
-        lfgRoleCheckUpdate.Members.emplace_back(roleCheck.leader, roles, ASSERT_NOTNULL(ObjectAccessor::FindConnectedPlayer(roleCheck.leader))->getLevel(), roles > 0);
+        lfgRoleCheckUpdate.Members.emplace_back(roleCheck.leader, roles, ASSERT_NOTNULL(ObjectAccessor::FindConnectedPlayer(roleCheck.leader))->GetLevel(), roles > 0);
 
         for (lfg::LfgRolesMap::const_iterator it = roleCheck.roles.begin(); it != roleCheck.roles.end(); ++it)
         {
@@ -420,7 +420,7 @@ void WorldSession::SendLfgRoleCheckUpdate(lfg::LfgRoleCheck const& roleCheck)
                 continue;
 
             roles = it->second;
-            lfgRoleCheckUpdate.Members.emplace_back(it->first, roles, ASSERT_NOTNULL(ObjectAccessor::FindConnectedPlayer(roleCheck.leader))->getLevel(), roles > 0);
+            lfgRoleCheckUpdate.Members.emplace_back(it->first, roles, ASSERT_NOTNULL(ObjectAccessor::FindConnectedPlayer(roleCheck.leader))->GetLevel(), roles > 0);
         }
     }
 
@@ -494,12 +494,12 @@ void WorldSession::SendLfgPlayerReward(lfg::LfgPlayerRewardData const& rewardDat
     lfgPlayerReward.QueuedSlot = rewardData.rdungeonEntry;
     lfgPlayerReward.ActualSlot = rewardData.sdungeonEntry;
     uint32 rewardMoney = rewardData.quest->GetRewOrReqMoney(_player);
-    uint32 rewardExp = _player->getLevel() < sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL) ? rewardData.quest->GetXPReward(_player) : 0;
+    uint32 rewardExp = _player->GetLevel() < sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL) ? rewardData.quest->GetXPReward(_player) : 0;
 
     if (rewardData.shortageQuest)
     {
         rewardMoney += rewardData.shortageQuest->GetRewOrReqMoney(_player);
-        rewardExp += _player->getLevel() < sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL) ? rewardData.shortageQuest->GetXPReward(_player) : 0;
+        rewardExp += _player->GetLevel() < sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL) ? rewardData.shortageQuest->GetXPReward(_player) : 0;
     }
 
     lfgPlayerReward.RewardMoney = rewardMoney;

@@ -745,7 +745,7 @@ class spell_hun_tame_beast : public SpellScript
         if (!GetExplTargetUnit())
             return SPELL_FAILED_BAD_IMPLICIT_TARGETS;
 
-        if (player->getClass() != CLASS_HUNTER)
+        if (player->GetClass() != CLASS_HUNTER)
             return SendTameFailResult(PET_TAME_FAILURE_CANNOT_TAME_CREATURES);
 
         if (!player->GetFirstUnusedActivePetSlot())
@@ -757,7 +757,7 @@ class spell_hun_tame_beast : public SpellScript
 
         if (Creature* target = GetExplTargetUnit()->ToCreature())
         {
-            if (target->getLevel() > player->getLevel())
+            if (target->GetLevel() > player->GetLevel())
                 return SendTameFailResult(PET_TAME_FAILURE_TOO_HIGH_LEVEL);
 
             if (!target->GetCreatureTemplate()->IsTameable(player->ToPlayer()->CanTameExoticPets()))

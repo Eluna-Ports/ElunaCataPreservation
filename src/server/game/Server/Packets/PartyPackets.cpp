@@ -88,7 +88,7 @@ void WorldPackets::Party::PartyMemberState::Initialize(Player const* player)
         MemberStats.Status |= MEMBER_STATUS_DND;
 
     // Level
-    MemberStats.Level = player->getLevel();
+    MemberStats.Level = player->GetLevel();
 
     // Health
     MemberStats.CurrentHealth = player->GetHealth();

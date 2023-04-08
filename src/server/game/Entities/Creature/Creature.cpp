@@ -1234,13 +1234,13 @@ bool Creature::isCanInteractWithBattleMaster(Player* player, bool msg) const
 
 bool Creature::CanResetTalents(Player* player) const
 {
-    return player->getLevel() >= 10
-        && player->getClass() == GetCreatureTemplate()->trainer_class;
+    return player->GetLevel() >= 10
+        && player->GetClass() == GetCreatureTemplate()->trainer_class;
 }
 
 bool Creature::IsClassTrainerOf(Player const* player) const
 {
-    return player->getClass() == GetCreatureTemplate()->trainer_class;
+    return player->GetClass() == GetCreatureTemplate()->trainer_class;
 }
 
 Player* Creature::GetLootRecipient() const
@@ -1440,7 +1440,7 @@ void Creature::UpdateLevelDependantStats()
 {
     CreatureTemplate const* cInfo = GetCreatureTemplate();
     uint32 rank = IsPet() ? 0 : cInfo->rank;
-    CreatureBaseStats const* stats = sObjectMgr->GetCreatureBaseStats(getLevel(), cInfo->unit_class);
+    CreatureBaseStats const* stats = sObjectMgr->GetCreatureBaseStats(GetLevel(), cInfo->unit_class);
 
     // health
     float healthmod = _GetHealthMod(rank);
@@ -1461,7 +1461,7 @@ void Creature::UpdateLevelDependantStats()
     SetStatPctModifier(UnitMods(UNIT_MOD_POWER_START + AsUnderlyingType(powerType)), BASE_PCT, cInfo->ModMana * cInfo->ModManaExtra);
     SetPowerType(powerType);
 
-    switch (getClass())
+    switch (GetClass())
     {
         case UNIT_CLASS_PALADIN:
         case UNIT_CLASS_MAGE:
@@ -1913,8 +1913,8 @@ float Creature::GetAttackDistance(Unit const* player) const
     float aggroRate = sWorld->getRate(RATE_CREATURE_AGGRO);
     uint8 expansionMaxLevel = uint8(DBCManager::GetMaxLevelForExpansion(GetCreatureTemplate()->expansion));
 
-    uint32 playerLevel = player->getLevel();
-    uint32 creatureLevel = getLevel();
+    uint32 playerLevel = player->GetLevel();
+    uint32 creatureLevel = GetLevel();
 
     if (aggroRate == 0.0f)
         return 0.0f;
@@ -2803,7 +2803,7 @@ uint8 Creature::getLevelForTarget(WorldObject const* target) const
     if (!isWorldBoss() || !target->ToUnit())
         return Unit::getLevelForTarget(target);
 
-    uint16 level = target->ToUnit()->getLevel() + sWorld->getIntConfig(CONFIG_WORLD_BOSS_LEVEL_DIFF);
+    uint16 level = target->ToUnit()->GetLevel() + sWorld->getIntConfig(CONFIG_WORLD_BOSS_LEVEL_DIFF);
     if (level < 1)
         return 1;
     if (level > 255)

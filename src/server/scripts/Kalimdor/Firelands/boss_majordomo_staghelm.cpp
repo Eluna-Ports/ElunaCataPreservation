@@ -424,7 +424,7 @@ class spell_majordomo_staghelm_leaping_flames_targeting : public SpellScript
                 return true;
 
             // Leaping Flames will prioritize ranged classes and specs
-            switch (player->getClass())
+            switch (player->GetClass())
             {
                 case CLASS_HUNTER:
                 case CLASS_MAGE:

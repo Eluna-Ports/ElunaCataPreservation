@@ -358,7 +358,7 @@ class spell_gen_aura_service_uniform : public SpellScriptLoader
                 Unit* target = GetTarget();
                 if (target->GetTypeId() == TYPEID_PLAYER)
                 {
-                    if (target->getGender() == GENDER_MALE)
+                    if (target->GetGender() == GENDER_MALE)
                         target->SetDisplayId(MODEL_GOBLIN_MALE);
                     else
                         target->SetDisplayId(MODEL_GOBLIN_FEMALE);
@@ -1245,7 +1245,7 @@ class spell_gen_dalaran_disguise : public SpellScriptLoader
             {
                 if (Player* player = GetHitPlayer())
                 {
-                    uint8 gender = player->getGender();
+                    uint8 gender = player->GetGender();
 
                     uint32 spellId = GetSpellInfo()->Id;
 
@@ -1697,7 +1697,7 @@ class spell_ethereal_pet_aura : public AuraScript
 {
     bool CheckProc(ProcEventInfo& eventInfo)
     {
-        uint32 levelDiff = std::abs(GetTarget()->getLevel() - eventInfo.GetProcTarget()->getLevel());
+        uint32 levelDiff = std::abs(GetTarget()->GetLevel() - eventInfo.GetProcTarget()->GetLevel());
         return levelDiff <= 9;
     }
 
@@ -2446,7 +2446,7 @@ class spell_gen_orc_disguise : public SpellScriptLoader
                 Unit* caster = GetCaster();
                 if (Player* target = GetHitPlayer())
                 {
-                    uint8 gender = target->getGender();
+                    uint8 gender = target->GetGender();
                     if (!gender)
                         caster->CastSpell(target, SPELL_ORC_DISGUISE_MALE, true);
                     else
@@ -2619,7 +2619,7 @@ class spell_gen_pet_summoned : public SpellScriptLoader
                 Player* player = GetCaster()->ToPlayer();
                 if (player->GetLastPetNumber())
                 {
-                    PetType newPetType = (player->getClass() == CLASS_HUNTER) ? HUNTER_PET : SUMMON_PET;
+                    PetType newPetType = (player->GetClass() == CLASS_HUNTER) ? HUNTER_PET : SUMMON_PET;
                     Pet* newPet = new Pet(player, newPetType);
                     if (newPet->LoadPetData(player, 0, player->GetLastPetNumber(), true))
                     {
@@ -2810,7 +2810,7 @@ class spell_gen_running_wild_AuraScript : public AuraScript
         Unit* target = GetTarget();
         PreventDefaultAction();
 
-        target->Mount(target->getGender() == GENDER_FEMALE ? RUNNING_WILD_MODEL_FEMALE : RUNNING_WILD_MODEL_MALE, 0, 0);
+        target->Mount(target->GetGender() == GENDER_FEMALE ? RUNNING_WILD_MODEL_FEMALE : RUNNING_WILD_MODEL_MALE, 0, 0);
 
         // cast speed aura
         if (MountCapabilityEntry const* mountCapability = sMountCapabilityStore.LookupEntry(aurEff->GetAmount()))
@@ -3482,7 +3482,7 @@ class spell_gen_gm_freeze : public AuraScript
             player->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
 
             // if player class = hunter || warlock remove pet if alive
-            if ((player->getClass() == CLASS_HUNTER) || (player->getClass() == CLASS_WARLOCK))
+            if ((player->GetClass() == CLASS_HUNTER) || (player->GetClass() == CLASS_WARLOCK))
             {
                 if (Pet* pet = player->GetPet())
                 {
@@ -3501,7 +3501,7 @@ class spell_gen_gm_freeze : public AuraScript
         if (Player* player = GetTarget()->ToPlayer())
         {
             // Reset player faction + allow combat + allow duels
-            player->SetFactionForRace(player->getRace());
+            player->SetFactionForRace(player->GetRace());
             player->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
             // save player
             player->SaveToDB();
@@ -4780,7 +4780,7 @@ class spell_gen_flask_of_battle : public SpellScript
         uint32 spellId = 0;
 
         uint32 primaryTalentTree = player->GetPrimaryTalentTree(player->GetActiveSpec());
-        switch (player->getClass())
+        switch (player->GetClass())
         {
             case CLASS_WARLOCK:
             case CLASS_MAGE:
@@ -4959,9 +4959,9 @@ class spell_gen_rocket_barrage : public SpellScript
     void HandleDamage(SpellEffIndex effIndex)
     {
         Unit* caster = GetCaster();
-        int32 basePoints = GetEffectValue() + caster->getLevel() * 2;
+        int32 basePoints = GetEffectValue() + caster->GetLevel() * 2;
         basePoints += caster->SpellBaseDamageBonusDone(GetSpellInfo()->GetSchoolMask()) * GetSpellInfo()->Effects[effIndex].BonusMultiplier;
-        basePoints += caster->GetTotalAttackPowerValue(caster->getClass() != CLASS_HUNTER ? BASE_ATTACK : RANGED_ATTACK) * GetSpellInfo()->BonusCoefficient;
+        basePoints += caster->GetTotalAttackPowerValue(caster->GetClass() != CLASS_HUNTER ? BASE_ATTACK : RANGED_ATTACK) * GetSpellInfo()->BonusCoefficient;
         SetEffectValue(basePoints);
     }
 

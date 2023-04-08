@@ -1281,7 +1281,7 @@ void Unit::CalculateMeleeDamage(Unit* victim, CalcDamageInfo* damageInfo, Weapon
         {
             damageInfo->HitInfo     |= HITINFO_GLANCING;
             damageInfo->TargetState  = VICTIMSTATE_HIT;
-            int32 leveldif = int32(victim->getLevel()) - int32(getLevel());
+            int32 leveldif = int32(victim->GetLevel()) - int32(GetLevel());
             if (leveldif > 3)
                 leveldif = 3;
 
@@ -1385,8 +1385,8 @@ void Unit::DealMeleeDamage(CalcDamageInfo* damageInfo, bool durabilityLoss)
         float chance = 20.0f;
 
         // there is a newbie protection, at level 10 just 7% base chance; assuming linear function
-        if (victim->getLevel() < 30)
-            chance = 0.65f * victim->getLevel() + 0.5f;
+        if (victim->GetLevel() < 30)
+            chance = 0.65f * victim->GetLevel() + 0.5f;
 
         uint32 const victimDefense = victim->GetMaxSkillValueForLevel(this);
         uint32 const attackerMeleeSkill = GetMaxSkillValueForLevel();
@@ -1528,7 +1528,7 @@ static float GetArmorReduction(float armor, uint8 attackerLevel)
             armor = 0.0f;
     }
 
-    float armorReduction = 100.f - GetArmorReduction(armor, attacker ? attacker->getLevel() : attackerLevel);
+    float armorReduction = 100.f - GetArmorReduction(armor, attacker ? attacker->GetLevel() : attackerLevel);
     return std::max<uint32>(std::ceil(damage * armorReduction / 100.f), 0);
 }
 
@@ -1622,7 +1622,7 @@ static float GetArmorReduction(float armor, uint8 attackerLevel)
 
     static uint32 const BOSS_LEVEL = 83;
     static float const BOSS_RESISTANCE_CONSTANT = 510.0f;
-    uint32 level = victim->getLevel();
+    uint32 level = victim->GetLevel();
     float resistanceConstant = 0.0f;
 
     if (level == BOSS_LEVEL)
@@ -2133,7 +2133,7 @@ MeleeHitOutcome Unit::RollMeleeOutcomeAgainst(const Unit* victim, WeaponAttackTy
     // Max 40% chance to score a glancing blow against mobs of the same or higher level (only players and pets, not for ranged weapons).
     if ((GetTypeId() == TYPEID_PLAYER || IsPet()) &&
         victim->GetTypeId() != TYPEID_PLAYER && !victim->IsPet() &&
-        getLevel() <= victim->getLevelForTarget(this))
+        GetLevel() <= victim->getLevelForTarget(this))
     {
         // cap possible value (with bonuses > max skill)
         int32 skill = attackerMaxSkillValueForLevel;
@@ -5255,7 +5255,7 @@ Powers Unit::CalculateDisplayPowerType() const
             break;
         default:
         {
-            ChrClassesEntry const* cEntry = sChrClassesStore.LookupEntry(getClass());
+            ChrClassesEntry const* cEntry = sChrClassesStore.LookupEntry(GetClass());
             if (cEntry && cEntry->DisplayPower < MAX_POWERS)
                 displayPower = Powers(cEntry->DisplayPower);
 
@@ -5263,7 +5263,7 @@ Powers Unit::CalculateDisplayPowerType() const
             {
                 if (PowerDisplayEntry const* powerDisplay = sPowerDisplayStore.LookupEntry(vehicle->GetVehicleInfo()->PowerDisplayID[0])) // To-do: 4.x has 3 power display id fields.
                     displayPower = Powers(powerDisplay->ActualType);
-                else if (getClass() == CLASS_ROGUE)
+                else if (GetClass() == CLASS_ROGUE)
                     displayPower = POWER_ENERGY;
             }
             else if (Pet const* pet = ToPet())
@@ -6863,7 +6863,7 @@ float Unit::SpellCritChanceTaken(Unit const* caster, SpellInfo const* spellInfo,
                 // Spell crit suppression
                 if (GetTypeId() == TYPEID_UNIT)
                 {
-                    int32 const levelDiff = static_cast<int32>(getLevelForTarget(caster)) - caster->getLevel();
+                    int32 const levelDiff = static_cast<int32>(getLevelForTarget(caster)) - caster->GetLevel();
                     if (levelDiff > 0)
                         crit_chance -= levelDiff * 0.7f;
                 }
@@ -10061,7 +10061,7 @@ void Unit::ProcSkillsAndReactives(bool isVictim, Unit* procTarget, uint32 typeMa
             if (isVictim)
             {
                 // Skip checks for Death Knights when in Blood Presence (Rune Strike)
-                if (getClass() == CLASS_DEATH_KNIGHT && hitMask & (PROC_HIT_DODGE | PROC_HIT_PARRY | PROC_HIT_BLOCK))
+                if (GetClass() == CLASS_DEATH_KNIGHT && hitMask & (PROC_HIT_DODGE | PROC_HIT_PARRY | PROC_HIT_BLOCK))
                     if (GetAuraEffect(SPELL_AURA_MOD_BASE_RESISTANCE_PCT, SPELLFAMILY_DEATHKNIGHT, 0x800000, 0, 0, GetGUID()))
                         return;
 
@@ -10069,7 +10069,7 @@ void Unit::ProcSkillsAndReactives(bool isVictim, Unit* procTarget, uint32 typeMa
                 if (hitMask & PROC_HIT_DODGE)
                 {
                     // Update AURA_STATE on dodge
-                    if (getClass() != CLASS_ROGUE) // skip Rogue Riposte
+                    if (GetClass() != CLASS_ROGUE) // skip Rogue Riposte
                     {
                         ModifyAuraState(AURA_STATE_DEFENSE, true);
                         StartReactiveTimer(REACTIVE_DEFENSE);
@@ -10079,7 +10079,7 @@ void Unit::ProcSkillsAndReactives(bool isVictim, Unit* procTarget, uint32 typeMa
                 if (hitMask & PROC_HIT_PARRY)
                 {
                     // For Hunters only Counterattack (skip Mongoose bite)
-                    if (getClass() == CLASS_HUNTER)
+                    if (GetClass() == CLASS_HUNTER)
                     {
                         ModifyAuraState(AURA_STATE_HUNTER_PARRY, true);
                         StartReactiveTimer(REACTIVE_HUNTER_PARRY);
@@ -10100,7 +10100,7 @@ void Unit::ProcSkillsAndReactives(bool isVictim, Unit* procTarget, uint32 typeMa
             else // For attacker
             {
                 // Overpower on victim dodge
-                if ((hitMask & PROC_HIT_DODGE) && GetTypeId() == TYPEID_PLAYER && getClass() == CLASS_WARRIOR)
+                if ((hitMask & PROC_HIT_DODGE) && GetTypeId() == TYPEID_PLAYER && GetClass() == CLASS_WARRIOR)
                 {
                     ToPlayer()->AddComboPoints(procTarget, 1);
                     StartReactiveTimer(REACTIVE_OVERPOWER);
@@ -10520,9 +10520,9 @@ void Unit::ClearAllReactives()
 
     if (HasAuraState(AURA_STATE_DEFENSE))
         ModifyAuraState(AURA_STATE_DEFENSE, false);
-    if (getClass() == CLASS_HUNTER && HasAuraState(AURA_STATE_HUNTER_PARRY))
+    if (GetClass() == CLASS_HUNTER && HasAuraState(AURA_STATE_HUNTER_PARRY))
         ModifyAuraState(AURA_STATE_HUNTER_PARRY, false);
-    if (getClass() == CLASS_WARRIOR && GetTypeId() == TYPEID_PLAYER)
+    if (GetClass() == CLASS_WARRIOR && GetTypeId() == TYPEID_PLAYER)
         ToPlayer()->ClearComboPoints();
 }
 
@@ -10546,11 +10546,11 @@ void Unit::UpdateReactives(uint32 p_time)
                         ModifyAuraState(AURA_STATE_DEFENSE, false);
                     break;
                 case REACTIVE_HUNTER_PARRY:
-                    if (getClass() == CLASS_HUNTER && HasAuraState(AURA_STATE_HUNTER_PARRY))
+                    if (GetClass() == CLASS_HUNTER && HasAuraState(AURA_STATE_HUNTER_PARRY))
                         ModifyAuraState(AURA_STATE_HUNTER_PARRY, false);
                     break;
                 case REACTIVE_OVERPOWER:
-                    if (getClass() == CLASS_WARRIOR && GetTypeId() == TYPEID_PLAYER)
+                    if (GetClass() == CLASS_WARRIOR && GetTypeId() == TYPEID_PLAYER)
                         ToPlayer()->ClearComboPoints();
                     break;
             }
@@ -10652,22 +10652,22 @@ void Unit::ApplyHasteRegenMod(WeaponAttackType att, float val, bool apply)
 
     if (val > 0.f)
     {
-        if (att == BASE_ATTACK && getClass() != CLASS_HUNTER)
+        if (att == BASE_ATTACK && GetClass() != CLASS_HUNTER)
             ApplyPercentModFloatVar(amount, val, !apply);
-        else if (att == RANGED_ATTACK && getClass() == CLASS_HUNTER)
+        else if (att == RANGED_ATTACK && GetClass() == CLASS_HUNTER)
             ApplyPercentModFloatVar(amount, val, !apply);
     }
     else
     {
-        if (att == BASE_ATTACK && getClass() != CLASS_HUNTER)
+        if (att == BASE_ATTACK && GetClass() != CLASS_HUNTER)
             ApplyPercentModFloatVar(amount, -val, apply);
-        else if (att == RANGED_ATTACK && getClass() == CLASS_HUNTER)
+        else if (att == RANGED_ATTACK && GetClass() == CLASS_HUNTER)
             ApplyPercentModFloatVar(amount, -val, apply);
     }
 
     SetFloatValue(PLAYER_FIELD_MOD_HASTE_REGEN, amount);
 
-    if (getClass() == CLASS_DEATH_KNIGHT)
+    if (GetClass() == CLASS_DEATH_KNIGHT)
         ToPlayer()->UpdatePowerRegeneration(POWER_RUNE);
 }
 
@@ -10751,7 +10751,7 @@ uint32 Unit::GetCastingTimeForBonus(SpellInfo const* spellProto, DamageEffectTyp
     if (overTime > 0 && CastingTime > 0 && DirectDamage)
     {
         // mainly for DoTs which are 3500 here otherwise
-        uint32 OriginalCastTime = spellProto->CalcCastTime(getLevel());
+        uint32 OriginalCastTime = spellProto->CalcCastTime(GetLevel());
         if (OriginalCastTime > 7000) OriginalCastTime = 7000;
         if (OriginalCastTime < 1500) OriginalCastTime = 1500;
         // Portion to Over Time
@@ -10840,7 +10840,7 @@ float Unit::CalculateDefaultCoefficient(SpellInfo const* spellInfo, DamageEffect
             DotFactor /= DotTicks;
     }
 
-    int32 CastingTime = spellInfo->IsChanneled() ? spellInfo->GetDuration() : spellInfo->CalcCastTime(getLevel());
+    int32 CastingTime = spellInfo->IsChanneled() ? spellInfo->GetDuration() : spellInfo->CalcCastTime(GetLevel());
     // Distribute Damage over multiple effects, reduce by AoE
     CastingTime = GetCastingTimeForBonus(spellInfo, damagetype, CastingTime);
 
@@ -10901,7 +10901,7 @@ Pet* Unit::CreateTamedPetFrom(Creature* creatureTarget, uint32 spell_id)
         return nullptr;
     }
 
-    uint8 level = getLevel();
+    uint8 level = GetLevel();
 
     InitTamedPet(pet, level, spell_id);
 
@@ -10919,7 +10919,7 @@ Pet* Unit::CreateTamedPetFrom(uint32 creatureEntry, uint32 spell_id)
 
     Pet* pet = new Pet(ToPlayer(), HUNTER_PET);
 
-    if (!pet->CreateBaseAtCreatureInfo(creatureInfo, this) || !InitTamedPet(pet, getLevel(), spell_id))
+    if (!pet->CreateBaseAtCreatureInfo(creatureInfo, this) || !InitTamedPet(pet, GetLevel(), spell_id))
     {
         delete pet;
         return nullptr;
@@ -11617,7 +11617,7 @@ bool Unit::SetCharmedBy(Unit* charmer, CharmType type, AuraApplication const* au
                 AddUnitState(UNIT_STATE_POSSESSED);
                 break;
             case CHARM_TYPE_CHARM:
-                if (GetTypeId() == TYPEID_UNIT && charmer->getClass() == CLASS_WARLOCK)
+                if (GetTypeId() == TYPEID_UNIT && charmer->GetClass() == CLASS_WARLOCK)
                 {
                     CreatureTemplate const* cinfo = ToCreature()->GetCreatureTemplate();
                     if (cinfo && cinfo->type == CREATURE_TYPE_DEMON)
@@ -11716,7 +11716,7 @@ void Unit::RemoveCharmedBy(Unit* charmer)
                 RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_POSSESSED);
                 break;
             case CHARM_TYPE_CHARM:
-                if (GetTypeId() == TYPEID_UNIT && charmer->getClass() == CLASS_WARLOCK)
+                if (GetTypeId() == TYPEID_UNIT && charmer->GetClass() == CLASS_WARLOCK)
                 {
                     CreatureTemplate const* cinfo = ToCreature()->GetCreatureTemplate();
                     if (cinfo && cinfo->type == CREATURE_TYPE_DEMON)
@@ -11761,7 +11761,7 @@ void Unit::RemoveCharmedBy(Unit* charmer)
 void Unit::RestoreFaction()
 {
     if (GetTypeId() == TYPEID_PLAYER)
-        ToPlayer()->SetFactionForRace(getRace());
+        ToPlayer()->SetFactionForRace(GetRace());
     else
     {
         if (HasUnitTypeMask(UNIT_MASK_MINION))
@@ -12213,7 +12213,7 @@ uint32 Unit::GetModelForForm(ShapeshiftForm form, uint32 spellId) const
         {
             case FORM_CAT:
                 // Based on Hair color
-                if (getRace() == RACE_NIGHTELF)
+                if (GetRace() == RACE_NIGHTELF)
                 {
                     uint8 hairColor = GetByteValue(PLAYER_BYTES, PLAYER_BYTES_OFFSET_HAIR_COLOR_ID);
                     switch (hairColor)
@@ -12233,7 +12233,7 @@ uint32 Unit::GetModelForForm(ShapeshiftForm form, uint32 spellId) const
                             return 892;
                     }
                 }
-                else if (getRace() == RACE_TROLL)
+                else if (GetRace() == RACE_TROLL)
                 {
                     uint8 hairColor = GetByteValue(PLAYER_BYTES, PLAYER_BYTES_OFFSET_HAIR_COLOR_ID);
                     switch (hairColor)
@@ -12255,12 +12255,12 @@ uint32 Unit::GetModelForForm(ShapeshiftForm form, uint32 spellId) const
                             return 33669;
                     }
                 }
-                else if (getRace() == RACE_WORGEN)
+                else if (GetRace() == RACE_WORGEN)
                 {
                     // Based on Skin color
                     uint8 skinColor = GetByteValue(PLAYER_BYTES, PLAYER_BYTES_OFFSET_SKIN_ID);
                     // Male
-                    if (getGender() == GENDER_MALE)
+                    if (GetGender() == GENDER_MALE)
                     {
                         switch (skinColor)
                         {
@@ -12300,11 +12300,11 @@ uint32 Unit::GetModelForForm(ShapeshiftForm form, uint32 spellId) const
                     }
                 }
                 // Based on Skin color
-                else if (getRace() == RACE_TAUREN)
+                else if (GetRace() == RACE_TAUREN)
                 {
                     uint8 skinColor = GetByteValue(PLAYER_BYTES, PLAYER_BYTES_OFFSET_SKIN_ID);
                     // Male
-                    if (getGender() == GENDER_MALE)
+                    if (GetGender() == GENDER_MALE)
                     {
                         switch (skinColor)
                         {
@@ -12355,13 +12355,13 @@ uint32 Unit::GetModelForForm(ShapeshiftForm form, uint32 spellId) const
                         }
                     }
                 }
-                else if (Player::TeamForRace(getRace()) == ALLIANCE)
+                else if (Player::TeamForRace(GetRace()) == ALLIANCE)
                     return 892;
                 else
                     return 8571;
             case FORM_BEAR:
                 // Based on Hair color
-                if (getRace() == RACE_NIGHTELF)
+                if (GetRace() == RACE_NIGHTELF)
                 {
                     uint8 hairColor = GetByteValue(PLAYER_BYTES, PLAYER_BYTES_OFFSET_HAIR_COLOR_ID);
                     switch (hairColor)
@@ -12380,7 +12380,7 @@ uint32 Unit::GetModelForForm(ShapeshiftForm form, uint32 spellId) const
                             return 2281;
                     }
                 }
-                else if (getRace() == RACE_TROLL)
+                else if (GetRace() == RACE_TROLL)
                 {
                     uint8 hairColor = GetByteValue(PLAYER_BYTES, PLAYER_BYTES_OFFSET_HAIR_COLOR_ID);
                     switch (hairColor)
@@ -12403,12 +12403,12 @@ uint32 Unit::GetModelForForm(ShapeshiftForm form, uint32 spellId) const
                             return 33655;
                     }
                 }
-                else if (getRace() == RACE_WORGEN)
+                else if (GetRace() == RACE_WORGEN)
                 {
                     // Based on Skin color
                     uint8 skinColor = GetByteValue(PLAYER_BYTES, PLAYER_BYTES_OFFSET_SKIN_ID);
                     // Male
-                    if (getGender() == GENDER_MALE)
+                    if (GetGender() == GENDER_MALE)
                     {
                         switch (skinColor)
                         {
@@ -12448,11 +12448,11 @@ uint32 Unit::GetModelForForm(ShapeshiftForm form, uint32 spellId) const
                     }
                 }
                 // Based on Skin color
-                else if (getRace() == RACE_TAUREN)
+                else if (GetRace() == RACE_TAUREN)
                 {
                     uint8 skinColor = GetByteValue(PLAYER_BYTES, PLAYER_BYTES_OFFSET_SKIN_ID);
                     // Male
-                    if (getGender() == GENDER_MALE)
+                    if (GetGender() == GENDER_MALE)
                     {
                         switch (skinColor)
                         {
@@ -12503,24 +12503,24 @@ uint32 Unit::GetModelForForm(ShapeshiftForm form, uint32 spellId) const
                         }
                     }
                 }
-                else if (Player::TeamForRace(getRace()) == ALLIANCE)
+                else if (Player::TeamForRace(GetRace()) == ALLIANCE)
                     return 2281;
                 else
                     return 2289;
             case FORM_FLIGHT:
-                if (Player::TeamForRace(getRace()) == ALLIANCE)
+                if (Player::TeamForRace(GetRace()) == ALLIANCE)
                     return 20857;
                 return 20872;
             case FORM_FLIGHT_EPIC:
-                if (Player::TeamForRace(getRace()) == ALLIANCE)
-                    return (getRace() == RACE_WORGEN ? 37729 : 21243);
-                if (getRace() == RACE_TROLL)
+                if (Player::TeamForRace(GetRace()) == ALLIANCE)
+                    return (GetRace() == RACE_WORGEN ? 37729 : 21243);
+                if (GetRace() == RACE_TROLL)
                     return 37730;
                 return 21244;
             case FORM_MOONKIN:
-                if (getRace() == RACE_TROLL)
+                if (GetRace() == RACE_TROLL)
                     return 37174;
-                if (getRace() == RACE_WORGEN)
+                if (GetRace() == RACE_WORGEN)
                     return 37173;
                 return 15374;
             case FORM_GHOSTWOLF:
@@ -12541,13 +12541,13 @@ uint32 Unit::GetModelForForm(ShapeshiftForm form, uint32 spellId) const
             return formEntry->CreatureDisplayID[0];
         else
         {
-            if (Player::TeamForRace(getRace()) == ALLIANCE)
+            if (Player::TeamForRace(GetRace()) == ALLIANCE)
                 modelid = formEntry->CreatureDisplayID[0];
             else
                 modelid = formEntry->CreatureDisplayID[1];
 
             // If the player is horde but there are no values for the horde modelid - take the alliance modelid
-            if (!modelid && Player::TeamForRace(getRace()) == HORDE)
+            if (!modelid && Player::TeamForRace(GetRace()) == HORDE)
                 modelid = formEntry->CreatureDisplayID[0];
         }
     }
@@ -12557,7 +12557,7 @@ uint32 Unit::GetModelForForm(ShapeshiftForm form, uint32 spellId) const
 
 uint32 Unit::GetModelForTotem(PlayerTotemType totemType)
 {
-    switch (getRace())
+    switch (GetRace())
     {
         case RACE_ORC:
         {
@@ -14196,7 +14196,7 @@ void Unit::Talk(uint32 textId, ChatMsg msgType, float textRange, WorldObject con
         return;
     }
 
-    Trinity::BroadcastTextBuilder builder(this, msgType, textId, getGender(), target);
+    Trinity::BroadcastTextBuilder builder(this, msgType, textId, GetGender(), target);
     Trinity::LocalizedPacketDo<Trinity::BroadcastTextBuilder> localizer(builder);
     Trinity::PlayerDistWorker<Trinity::LocalizedPacketDo<Trinity::BroadcastTextBuilder> > worker(this, textRange, localizer);
     Cell::VisitWorldObjects(this, worker, textRange);
@@ -14231,7 +14231,7 @@ void Unit::Whisper(uint32 textId, Player* target, bool isBossWhisper /*= false*/
 
     LocaleConstant locale = target->GetSession()->GetSessionDbLocaleIndex();
     WorldPacket data;
-    ChatHandler::BuildChatPacket(data, isBossWhisper ? CHAT_MSG_RAID_BOSS_WHISPER : CHAT_MSG_MONSTER_WHISPER, LANG_UNIVERSAL, this, target, bct->GetText(locale, getGender()), 0, "", locale);
+    ChatHandler::BuildChatPacket(data, isBossWhisper ? CHAT_MSG_RAID_BOSS_WHISPER : CHAT_MSG_MONSTER_WHISPER, LANG_UNIVERSAL, this, target, bct->GetText(locale, GetGender()), 0, "", locale);
     target->SendDirectMessage(&data);
 }
 
@@ -14455,7 +14455,7 @@ void Unit::ProcessPendingSpellCastRequest()
     {
         if (Unit* target = targets.GetUnitTarget())
         {
-            SpellInfo const* actualSpellInfo = spellInfo->GetAuraRankForLevel(target->getLevel());
+            SpellInfo const* actualSpellInfo = spellInfo->GetAuraRankForLevel(target->GetLevel());
 
             // if rank not found then function return NULL but in explicit cast case original spell can be cast and later failed with appropriate error message
             if (actualSpellInfo)

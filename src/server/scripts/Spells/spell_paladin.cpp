@@ -256,7 +256,7 @@ class spell_pal_blessing_of_faith : public SpellScript
     {
         Unit* target = GetHitUnit();
         uint32 spellId = 0;
-        switch (target->getClass())
+        switch (target->GetClass())
         {
             case CLASS_DRUID:   spellId = SPELL_PALADIN_BLESSING_OF_LOWER_CITY_DRUID; break;
             case CLASS_PALADIN: spellId = SPELL_PALADIN_BLESSING_OF_LOWER_CITY_PALADIN; break;
@@ -806,7 +806,7 @@ class spell_pal_shield_of_the_righteous : public SpellScript
 {
     bool Load() override
     {
-        return GetCaster()->IsPlayer() && GetCaster()->getClass() == CLASS_PALADIN;
+        return GetCaster()->IsPlayer() && GetCaster()->GetClass() == CLASS_PALADIN;
     }
 
     void ChangeDamage(SpellEffIndex /*effIndex*/)
@@ -836,7 +836,7 @@ class spell_pal_templar_s_verdict : public SpellScript
 {
     bool Load() override
     {
-        return GetCaster()->IsPlayer() && GetCaster()->getClass() == CLASS_PALADIN;
+        return GetCaster()->IsPlayer() && GetCaster()->GetClass() == CLASS_PALADIN;
     }
 
     void HandleDamageBonus(SpellEffIndex /*effIndex*/)
@@ -1155,7 +1155,7 @@ class spell_pal_word_of_glory: public SpellScript
         if (GetCaster()->GetTypeId() != TYPEID_PLAYER)
             return false;
 
-        if (GetCaster()->ToPlayer()->getClass() != CLASS_PALADIN)
+        if (GetCaster()->ToPlayer()->GetClass() != CLASS_PALADIN)
             return false;
 
         return true;
@@ -1536,7 +1536,7 @@ class spell_pal_light_of_dawn: public SpellScript
         if (GetCaster()->GetTypeId() != TYPEID_PLAYER)
             return false;
 
-        if (GetCaster()->ToPlayer()->getClass() != CLASS_PALADIN)
+        if (GetCaster()->ToPlayer()->GetClass() != CLASS_PALADIN)
             return false;
 
         return true;
@@ -1586,7 +1586,7 @@ class spell_pal_holy_radiance: public SpellScript
         if (GetCaster()->GetTypeId() != TYPEID_PLAYER)
             return false;
 
-        if (GetCaster()->ToPlayer()->getClass() != CLASS_PALADIN)
+        if (GetCaster()->ToPlayer()->GetClass() != CLASS_PALADIN)
             return false;
 
         _targetCount = 0;

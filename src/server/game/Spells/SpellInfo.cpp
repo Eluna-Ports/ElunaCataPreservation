@@ -450,9 +450,9 @@ int32 SpellEffectInfo::CalcValue(WorldObject const* caster, int32 const* bp, Uni
     {
         int32 level = _spellInfo->SpellLevel;
         if (target && _spellInfo->HasAttribute(SPELL_ATTR8_USE_TARGETS_LEVEL_FOR_SPELL_SCALING))
-            level = target->getLevel();
+            level = target->GetLevel();
         else if (casterUnit)
-            level = casterUnit->getLevel();
+            level = casterUnit->GetLevel();
 
         if (_spellInfo->HasAttribute(SPELL_ATTR10_USE_SPELL_BASE_LEVEL_FOR_SCALING))
             level = _spellInfo->BaseLevel;
@@ -494,9 +494,9 @@ int32 SpellEffectInfo::CalcValue(WorldObject const* caster, int32 const* bp, Uni
         {
             int32 level = 1;
             if (target && _spellInfo->HasAttribute(SPELL_ATTR8_USE_TARGETS_LEVEL_FOR_SPELL_SCALING))
-                level = target->getLevel();
+                level = target->GetLevel();
             else if (caster && caster->IsUnit())
-                level = casterUnit->getLevel();
+                level = casterUnit->GetLevel();
 
             if (level > int32(_spellInfo->MaxLevel) && _spellInfo->MaxLevel > 0)
                 level = int32(_spellInfo->MaxLevel);
@@ -539,7 +539,7 @@ int32 SpellEffectInfo::CalcValue(WorldObject const* caster, int32 const* bp, Uni
         value = casterUnit->ApplyEffectModifiers(_spellInfo, _effIndex, value);
 
         if (!casterUnit->IsControlledByPlayer() &&
-            _spellInfo->SpellLevel && _spellInfo->SpellLevel != casterUnit->getLevel() &&
+            _spellInfo->SpellLevel && _spellInfo->SpellLevel != casterUnit->GetLevel() &&
             !basePointsPerLevel && _spellInfo->HasAttribute(SPELL_ATTR0_SCALES_WITH_CREATURE_LEVEL))
         {
             bool canEffectScale = false;
@@ -583,12 +583,12 @@ int32 SpellEffectInfo::CalcValue(WorldObject const* caster, int32 const* bp, Uni
             if (canEffectScale)
             {
                 GtNPCManaCostScalerEntry const* spellScaler = sGtNPCManaCostScalerStore.LookupEntry(_spellInfo->SpellLevel - 1);
-                GtNPCManaCostScalerEntry const* casterScaler = sGtNPCManaCostScalerStore.LookupEntry(casterUnit->getLevel() - 1);
+                GtNPCManaCostScalerEntry const* casterScaler = sGtNPCManaCostScalerStore.LookupEntry(casterUnit->GetLevel() - 1);
                 if (spellScaler && casterScaler)
                 {
                     value *= casterScaler->ratio / spellScaler->ratio;
-                    if (casterUnit->getLevel() > 80)
-                        value *= (casterUnit->getLevel() - 80) * 4.4f; // Cataclysm creatures have a way higher jump in stats than previous expansions so we use this estimated value based on combat log packet research
+                    if (casterUnit->GetLevel() > 80)
+                        value *= (casterUnit->GetLevel() - 80) * 4.4f; // Cataclysm creatures have a way higher jump in stats than previous expansions so we use this estimated value based on combat log packet research
                 }
             }
         }
@@ -664,7 +664,7 @@ float SpellEffectInfo::CalcRadius(WorldObject* caster /*= nullptr*/, SpellTarget
     if (caster)
     {
         if (Unit* casterUnit = caster->ToUnit())
-            radius += entry->RadiusPerLevel * casterUnit->getLevel();
+            radius += entry->RadiusPerLevel * casterUnit->GetLevel();
 
         radius = std::min(radius, entry->RadiusMax);
 
@@ -3453,7 +3453,7 @@ int32 SpellInfo::CalcDuration(WorldObject const* caster /*= nullptr*/) const
     if (!unitCaster)
         return std::min(GetMaxDuration(), DurationEntry->Duration);
 
-    uint32 level = unitCaster->getLevel();
+    uint32 level = unitCaster->GetLevel();
     if (MaxLevel > 0 && level > MaxLevel)
         level = MaxLevel;
     if (BaseLevel > 0)
@@ -3545,7 +3545,7 @@ uint32 SpellInfo::CalcCastTime(uint8 level, Spell* spell /*= nullptr*/) const
 {
     int32 castTime = 0;
     if (!level && spell && spell->GetCaster()->IsUnit())
-        level = spell->GetCaster()->ToUnit()->getLevel();
+        level = spell->GetCaster()->ToUnit()->GetLevel();
 
     // not all spells have cast time index and this is all is passive abilities
     if (level && Scaling.CastTimeMax > 0)
@@ -3730,7 +3730,7 @@ int32 SpellInfo::CalcPowerCost(WorldObject const* caster, SpellSchoolMask school
         if (HasAttribute(SPELL_ATTR0_SCALES_WITH_CREATURE_LEVEL))
         {
             GtNPCManaCostScalerEntry const* spellScaler = sGtNPCManaCostScalerStore.LookupEntry(SpellLevel - 1);
-            GtNPCManaCostScalerEntry const* casterScaler = sGtNPCManaCostScalerStore.LookupEntry(unitCaster->getLevel() - 1);
+            GtNPCManaCostScalerEntry const* casterScaler = sGtNPCManaCostScalerStore.LookupEntry(unitCaster->GetLevel() - 1);
             if (spellScaler && spellScaler->ratio > 0.f && casterScaler && casterScaler->ratio > 0.f)
                 powerCost *= casterScaler->ratio / spellScaler->ratio;
         }
@@ -3762,7 +3762,7 @@ float SpellInfo::GetSpellScalingMultiplier(WorldObject const* caster, bool isPow
     float multiplier = 1.f;
     float scalingMultiplier = 1.f;
 
-    uint8 casterLevel = caster->ToUnit()->getLevel();
+    uint8 casterLevel = caster->ToUnit()->GetLevel();
 
     if (casterLevel < Scaling.CastTimeMaxLevel && Scaling.CastTimeMax)
     {

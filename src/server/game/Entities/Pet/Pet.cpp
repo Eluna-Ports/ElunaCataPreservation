@@ -197,7 +197,7 @@ bool Pet::LoadPetData(Player* owner, uint32 petEntry, uint32 petnumber, bool cur
     switch (getPetType())
     {
         case SUMMON_PET:
-            petlevel = owner->getLevel();
+            petlevel = owner->GetLevel();
             SetByteValue(UNIT_FIELD_BYTES_0, UNIT_BYTES_0_OFFSET_CLASS, uint8(CLASS_MAGE));
             SetUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED);
             break;
@@ -415,7 +415,7 @@ void Pet::SavePetToDB(PetSaveMode mode)
         stmt->setUInt32(1, GetEntry());
         stmt->setUInt64(2, ownerLowGUID);
         stmt->setUInt32(3, GetNativeDisplayId());
-        stmt->setUInt8(4, getLevel());
+        stmt->setUInt8(4, GetLevel());
         stmt->setUInt32(5, GetUInt32Value(UNIT_FIELD_PETEXPERIENCE));
         stmt->setUInt8(6, GetReactState());
         stmt->setInt16(7, m_petSlot);
@@ -441,7 +441,7 @@ void Pet::SavePetToDB(PetSaveMode mode)
         playerPetData->CreatureId = GetEntry();
         playerPetData->Owner = ownerLowGUID;
         playerPetData->DisplayId = GetNativeDisplayId();
-        playerPetData->Petlevel = getLevel();
+        playerPetData->Petlevel = GetLevel();
         playerPetData->PetExp = GetUInt32Value(UNIT_FIELD_PETEXPERIENCE);
         playerPetData->Reactstate = GetReactState();
         playerPetData->Slot = m_petSlot;
@@ -593,8 +593,8 @@ void Pet::GivePetXP(uint32 xp)
     if (!IsAlive())
         return;
 
-    uint8 maxlevel = std::min((uint8)sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL), GetOwner()->getLevel());
-    uint8 petlevel = getLevel();
+    uint8 maxlevel = std::min((uint8)sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL), GetOwner()->GetLevel());
+    uint8 petlevel = GetLevel();
 
     // If pet is detected to be at, or above(?) the players level, don't hand out XP
     if (petlevel >= maxlevel)
@@ -621,7 +621,7 @@ void Pet::GivePetXP(uint32 xp)
 
 void Pet::GivePetLevel(uint8 level)
 {
-    if (!level || level == getLevel())
+    if (!level || level == GetLevel())
         return;
 
     if (!IsHunterPet())
@@ -691,7 +691,7 @@ bool Pet::CreateBaseAtTamed(CreatureTemplate const* cinfo, Map* map)
 
     SetUInt32Value(UNIT_FIELD_PET_NAME_TIMESTAMP, 0);
     SetUInt32Value(UNIT_FIELD_PETEXPERIENCE, 0);
-    SetUInt32Value(UNIT_FIELD_PETNEXTLEVELEXP, uint32(sObjectMgr->GetXPForLevel(getLevel()+1)*PET_XP_FACTOR));
+    SetUInt32Value(UNIT_FIELD_PETNEXTLEVELEXP, uint32(sObjectMgr->GetXPForLevel(GetLevel()+1)*PET_XP_FACTOR));
     SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
 
     if (cinfo->type == CREATURE_TYPE_BEAST)
@@ -717,7 +717,7 @@ bool Guardian::InitStatsForLevel(uint8 petlevel)
     PetType petType = MAX_PET_TYPE;
     if (IsPet() && GetOwner()->GetTypeId() == TYPEID_PLAYER)
     {
-        switch (m_owner->getClass())
+        switch (m_owner->GetClass())
         {
             case CLASS_WARLOCK:
             case CLASS_SHAMAN:
@@ -732,7 +732,7 @@ bool Guardian::InitStatsForLevel(uint8 petlevel)
                 break;
             default:
                 TC_LOG_ERROR("entities.pet", "Unknown type pet %u is summoned by player class %u",
-                    GetEntry(), GetOwner()->getClass());
+                    GetEntry(), GetOwner()->GetClass());
                 break;
         }
     }
@@ -1024,13 +1024,13 @@ bool Pet::HaveInDiet(ItemTemplate const* item) const
 uint32 Pet::GetCurrentFoodBenefitLevel(uint32 itemlevel) const
 {
     // -10 or greater food level
-    if (getLevel() <= itemlevel + 10)                         // possible to feed level 85 pet with ilevel 75 level food for full effect
+    if (GetLevel() <= itemlevel + 10)                         // possible to feed level 85 pet with ilevel 75 level food for full effect
         return 50;
     // -10 to -20
-    else if (getLevel() <= itemlevel + 20)
+    else if (GetLevel() <= itemlevel + 20)
         return 25;
     // -20 to -30
-    else if (getLevel() <= itemlevel + 30)
+    else if (GetLevel() <= itemlevel + 30)
         return 13;
     // -30 or more difference
     else
@@ -1390,7 +1390,7 @@ bool Pet::addSpell(uint32 spellId, ActiveStates active /*= ACT_DECIDE*/, PetSpel
     uint32 talentCost = sDBCManager.GetTalentSpellCost(spellId);
     if (talentCost)
     {
-        int32 free_points = GetMaxTalentPointsForLevel(getLevel());
+        int32 free_points = GetMaxTalentPointsForLevel(GetLevel());
         m_usedTalentCount += talentCost;
         // update free talent points
         free_points-=m_usedTalentCount;
@@ -1417,7 +1417,7 @@ bool Pet::learnSpell(uint32 spell_id)
 
 void Pet::InitLevelupSpellsForLevel()
 {
-    uint8 level = getLevel();
+    uint8 level = GetLevel();
 
     if (PetLevelupSpellSet const* levelupSpells = GetCreatureTemplate()->family ? sSpellMgr->GetPetLevelupSpellList(GetCreatureTemplate()->family) : nullptr)
     {
@@ -1493,7 +1493,7 @@ bool Pet::removeSpell(uint32 spell_id, bool learn_prev, bool clear_ab)
         else
             m_usedTalentCount = 0;
         // update free talent points
-        int32 free_points = GetMaxTalentPointsForLevel(getLevel()) - m_usedTalentCount;
+        int32 free_points = GetMaxTalentPointsForLevel(GetLevel()) - m_usedTalentCount;
         SetFreeTalentPoints(free_points > 0 ? free_points : 0);
     }
 
@@ -1559,7 +1559,7 @@ bool Pet::resetTalents()
     if (!pet_family || pet_family->PetTalentType < 0)
         return false;
 
-    uint8 level = getLevel();
+    uint8 level = GetLevel();
     uint32 talentPointsForLevel = GetMaxTalentPointsForLevel(level);
 
     if (m_usedTalentCount == 0)
@@ -1697,7 +1697,7 @@ void Pet::resetTalentsForAllPetsOf(Player* /*owner*/, Pet* /*onlinePet*/ /*= nul
 
 void Pet::InitTalentForLevel()
 {
-    uint8 level = getLevel();
+    uint8 level = GetLevel();
     uint32 talentPointsForLevel = GetMaxTalentPointsForLevel(level);
     // Reset talents in case low level (on level down) or wrong points for level (hunter can unlearn TP increase talent)
     if (talentPointsForLevel == 0 || m_usedTalentCount > talentPointsForLevel)
@@ -1771,7 +1771,7 @@ bool Pet::IsPermanentPetFor(Player* owner) const
     switch (getPetType())
     {
         case SUMMON_PET:
-            switch (owner->getClass())
+            switch (owner->GetClass())
             {
                 case CLASS_WARLOCK:
                     return GetCreatureTemplate()->type == CREATURE_TYPE_DEMON;
@@ -1909,7 +1909,7 @@ void Pet::SynchronizeLevelWithOwner()
         // always same level
         case SUMMON_PET:
         case HUNTER_PET:
-            GivePetLevel(owner->getLevel());
+            GivePetLevel(owner->GetLevel());
             break;
         default:
             break;
@@ -1935,7 +1935,7 @@ float Pet::GetNativeObjectScale() const
                 scale = 1.f;
 
             float minScaleLevel = creatureFamily->MinScaleLevel;
-            uint8 level = getLevel();
+            uint8 level = GetLevel();
 
             float minLevelScaleMod = level >= minScaleLevel ? level - minScaleLevel : 0.f;
             float maxScaleMod = creatureFamily->MaxScaleLevel - minScaleLevel;

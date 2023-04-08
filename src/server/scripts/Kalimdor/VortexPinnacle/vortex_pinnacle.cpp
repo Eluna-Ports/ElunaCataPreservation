@@ -109,7 +109,7 @@ struct npc_lurking_tempest : public NullCreatureAI
 {
     npc_lurking_tempest(Creature* creature) : NullCreatureAI(creature)
     {
-        me->setRegeneratingHealth(false);
+        me->SetRegenerateHealth(false);
     }
 
     void JustAppeared() override

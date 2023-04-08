@@ -290,7 +290,7 @@ class TC_GAME_API Creature : public Unit, public GridObject<Creature>, public Ma
         bool hasInvolvedQuest(uint32 quest_id)  const override;
 
         bool isRegeneratingHealth() { return m_regenHealth; }
-        void setRegeneratingHealth(bool regenHealth) { m_regenHealth = regenHealth; }
+        void SetRegenerateHealth(bool regenHealth) { m_regenHealth = regenHealth; }
         virtual uint8 GetPetAutoSpellSize() const { return MAX_SPELL_CHARM; }
         virtual uint32 GetPetAutoSpellOnPos(uint8 pos) const;
         float GetPetChaseDistance() const;

@@ -472,7 +472,7 @@ class spell_ammunae_consume_life_energy : public SpellScript
             return;
 
         uint32 spellId = SPELL_CONSUME_LIFE_ENERGY_BURN_MANA;
-        switch (player->getClass())
+        switch (player->GetClass())
         {
             case CLASS_WARRIOR:
                 spellId = SPELL_CONSUME_LIFE_ENERGY_BURN_RAGE;

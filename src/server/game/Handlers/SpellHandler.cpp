@@ -496,9 +496,9 @@ void WorldSession::HandleMirrorImageDataRequest(WorldPacket& recvData)
     WorldPacket data(SMSG_MIRRORIMAGE_DATA, 68);
     data << uint64(guid);
     data << uint32(creator->GetDisplayId());
-    data << uint8(creator->getRace());
-    data << uint8(creator->getGender());
-    data << uint8(creator->getClass());
+    data << uint8(creator->GetRace());
+    data << uint8(creator->GetGender());
+    data << uint8(creator->GetClass());
 
     if (creator->GetTypeId() == TYPEID_PLAYER)
     {

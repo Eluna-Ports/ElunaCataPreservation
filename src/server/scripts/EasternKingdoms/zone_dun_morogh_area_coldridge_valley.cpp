@@ -439,7 +439,7 @@ public:
         {
             if (Creature* target = GetHitCreature())
             {
-                target->setRegeneratingHealth(false);
+                target->SetRegenerateHealth(false);
                 target->SetHealth(target->CountPctFromMaxHealth(10));
             }
         }

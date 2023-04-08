@@ -281,7 +281,7 @@ class spell_grim_batol_engulfing_flames : public SpellScript
     void HandleEffect(SpellEffIndex /*effIndex*/)
     {
         if (Creature* creature = GetHitCreature())
-            creature->setRegeneratingHealth(false);
+            creature->SetRegenerateHealth(false);
     }
 
     void Register() override

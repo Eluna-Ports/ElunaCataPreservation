@@ -1018,9 +1018,9 @@ public:
     bool operator()(WorldObject* object)
     {
         if (Unit* target = object->ToUnit())
-            return ((target->getClass() == CLASS_HUNTER
-                || target->getClass() == CLASS_WARRIOR
-                || target->getClass() == CLASS_DEATH_KNIGHT)
+            return ((target->GetClass() == CLASS_HUNTER
+                || target->GetClass() == CLASS_WARRIOR
+                || target->GetClass() == CLASS_DEATH_KNIGHT)
                 || target->HasAura(SPELL_TWILIGHT_METEORITE_TARGETING));
 
         return false;

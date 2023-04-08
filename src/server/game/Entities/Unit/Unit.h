@@ -886,14 +886,14 @@ class TC_GAME_API Unit : public WorldObject
         bool IsVehicle() const  { return (m_unitTypeMask & UNIT_MASK_VEHICLE) != 0; }
         bool IsControlableGuardian() const  { return (m_unitTypeMask & UNIT_MASK_CONTROLABLE_GUARDIAN) != 0; }
 
-        uint8 getLevel() const { return uint8(GetUInt32Value(UNIT_FIELD_LEVEL)); }
-        uint8 getLevelForTarget(WorldObject const* /*target*/) const override { return getLevel(); }
+        uint8 GetLevel() const { return uint8(GetUInt32Value(UNIT_FIELD_LEVEL)); }
+        uint8 getLevelForTarget(WorldObject const* /*target*/) const override { return GetLevel(); }
         void SetLevel(uint8 lvl);
-        uint8 getRace() const { return GetByteValue(UNIT_FIELD_BYTES_0, UNIT_BYTES_0_OFFSET_RACE); }
-        uint32 getRaceMask() const { return 1 << (getRace()-1); }
-        uint8 getClass() const { return GetByteValue(UNIT_FIELD_BYTES_0, UNIT_BYTES_0_OFFSET_CLASS); }
-        uint32 getClassMask() const { return 1 << (getClass()-1); }
-        uint8 getGender() const { return GetByteValue(UNIT_FIELD_BYTES_0, UNIT_BYTES_0_OFFSET_GENDER); }
+        uint8 GetRace() const { return GetByteValue(UNIT_FIELD_BYTES_0, UNIT_BYTES_0_OFFSET_RACE); }
+        uint32 GetRaceMask() const { return 1 << (GetRace()-1); }
+        uint8 GetClass() const { return GetByteValue(UNIT_FIELD_BYTES_0, UNIT_BYTES_0_OFFSET_CLASS); }
+        uint32 GetClassMask() const { return 1 << (GetClass()-1); }
+        uint8 GetGender() const { return GetByteValue(UNIT_FIELD_BYTES_0, UNIT_BYTES_0_OFFSET_GENDER); }
 
         float GetStat(Stats stat) const { return float(GetUInt32Value(UNIT_FIELD_STAT0 + AsUnderlyingType(stat))); }
         void SetStat(Stats stat, int32 val) { SetStatInt32Value(UNIT_FIELD_STAT0 + AsUnderlyingType(stat), val); }
@@ -982,7 +982,7 @@ class TC_GAME_API Unit : public WorldObject
         void  RemoveStandFlags(uint8 flags) { RemoveByteFlag(UNIT_FIELD_BYTES_1, UNIT_BYTES_1_OFFSET_VIS_FLAG, flags); }
 
         bool IsMounted() const { return HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNT); }
-        uint32 GetMountID() const { return GetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID); }
+        uint32 GetMountDisplayId() const { return GetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID); }
         void Mount(uint32 mount, uint32 vehicleId = 0, uint32 creatureEntry = 0);
         void Dismount();
         MountCapabilityEntry const* GetMountCapability(uint32 mountType) const;
@@ -991,7 +991,7 @@ class TC_GAME_API Unit : public WorldObject
         void SendDurabilityLoss(Player* receiver, uint32 percent);
         void PlayOneShotAnimKitId(uint16 animKitId);
 
-        uint32 GetMaxSkillValueForLevel(Unit const* target = nullptr) const { return (target ? getLevelForTarget(target) : getLevel()) * 5; }
+        uint32 GetMaxSkillValueForLevel(Unit const* target = nullptr) const { return (target ? getLevelForTarget(target) : GetLevel()) * 5; }
         static void DealDamageMods(Unit const* victim, uint32& damage, uint32* absorb);
         static uint32 DealDamage(Unit* attacker, Unit* victim, uint32 damage, uint32 unmitigatedDamage = 0, DamageEffectType damagetype = DIRECT_DAMAGE, SpellSchoolMask damageSchoolMask = SPELL_SCHOOL_MASK_NORMAL, SpellInfo const* spellProto = nullptr, bool durabilityLoss = true);
         static void Kill(Unit* attacker, Unit* victim, bool durabilityLoss = true);
@@ -1113,7 +1113,7 @@ class TC_GAME_API Unit : public WorldObject
         bool HasStealthAura()      const { return HasAuraType(SPELL_AURA_MOD_STEALTH); }
         bool HasInvisibilityAura() const { return HasAuraType(SPELL_AURA_MOD_INVISIBILITY); }
         bool isFeared()  const { return HasAuraType(SPELL_AURA_MOD_FEAR); }
-        bool isInRoots() const { return HasAuraType(SPELL_AURA_MOD_ROOT); }
+        bool IsRooted() const { return HasAuraType(SPELL_AURA_MOD_ROOT); }
         bool IsPolymorphed() const;
 
         bool isFrozen() const;

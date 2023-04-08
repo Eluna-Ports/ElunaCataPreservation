@@ -1554,7 +1554,7 @@ class spell_warl_curse_of_weakness : public AuraScript
         {
             if (Player* target = GetTarget()->ToPlayer())
             {
-                switch (target->getClass())
+                switch (target->GetClass())
                 {
                     case CLASS_WARRIOR:
                         _debuffSpellId = SPELL_WARLOCK_JINX_TRIGGERED_RAGE;

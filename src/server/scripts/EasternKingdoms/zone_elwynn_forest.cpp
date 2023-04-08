@@ -289,7 +289,7 @@ struct npc_hogger : public ScriptedAI
             me->RemoveAllAuras();
             me->KillSelf();
             me->setDeathState(ALIVE);
-            me->setRegeneratingHealth(false);
+            me->SetRegenerateHealth(false);
             me->SetHealth(1);
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
             Talk(SAY_SURRENDER);

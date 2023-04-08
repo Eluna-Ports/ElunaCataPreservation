@@ -171,10 +171,10 @@ bool WorldPackets::Query::PlayerGuidLookupData::Initialize(ObjectGuid const& gui
         ASSERT(player->GetGUID() == guid);
 
         Name = player->GetName();
-        Race = player->getRace();
-        Sex = player->getGender();
-        ClassID = player->getClass();
-        Level = player->getLevel();
+        Race = player->GetRace();
+        Sex = player->GetGender();
+        ClassID = player->GetClass();
+        Level = player->GetLevel();
 
         if (DeclinedName const* names = player->GetDeclinedNames())
             DeclinedNames = *names;

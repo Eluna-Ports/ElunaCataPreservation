@@ -893,7 +893,7 @@ void BattlegroundMgr::SendBattlegroundList(ObjectGuid guid, Player* player, Batt
     BattlegroundDataContainer::iterator it = bgDataStore.find(bgTypeId);
     if (it != bgDataStore.end())
     {
-        PvPDifficultyEntry const* bracketEntry = sDBCManager.GetBattlegroundBracketByLevel(it->second.m_Battlegrounds.begin()->second->GetMapId(), player->getLevel());
+        PvPDifficultyEntry const* bracketEntry = sDBCManager.GetBattlegroundBracketByLevel(it->second.m_Battlegrounds.begin()->second->GetMapId(), player->GetLevel());
         if (bracketEntry)
         {
             BattlegroundBracketId bracketId = bracketEntry->GetBracketId();

@@ -763,7 +763,7 @@ void InstanceScript::UpdateEncounterState(EncounterCreditType type, uint32 credi
                 ObjectGuid::LowType guildId = guild->GetId();
                 playersByGuild[guildId] = player;
 
-                uint8 playerLevel = player->getLevel();
+                uint8 playerLevel = player->GetLevel();
 
                 // Determine the highest player level of the guild group
                 auto it = minlevelByGuild.find(guildId);

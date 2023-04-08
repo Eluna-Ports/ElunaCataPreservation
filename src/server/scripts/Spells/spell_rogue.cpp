@@ -869,7 +869,7 @@ class spell_rog_eviscerate : public SpellScript
         if (GetCaster()->GetTypeId() != TYPEID_PLAYER)
             return false;
 
-        if (GetCaster()->ToPlayer()->getClass() != CLASS_ROGUE)
+        if (GetCaster()->ToPlayer()->GetClass() != CLASS_ROGUE)
             return false;
 
         return true;
@@ -936,7 +936,7 @@ class spell_rog_envenom : public SpellScript
 
     bool Load() override
     {
-        return (GetCaster()->IsPlayer() && GetCaster()->ToPlayer()->getClass() == CLASS_ROGUE);
+        return (GetCaster()->IsPlayer() && GetCaster()->ToPlayer()->GetClass() == CLASS_ROGUE);
     }
 
     void ChangeDamage(SpellEffIndex /*effIndex*/)

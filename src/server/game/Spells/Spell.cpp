@@ -602,7 +602,7 @@ m_caster((info->HasAttribute(SPELL_ATTR6_ORIGINATE_FROM_CONTROLLER) && caster->G
     {
         // wand case
         if (m_attackType == RANGED_ATTACK)
-            if ((playerCaster->getClassMask() & CLASSMASK_WAND_USERS) != 0)
+            if ((playerCaster->GetClassMask() & CLASSMASK_WAND_USERS) != 0)
                 if (Item* pItem = playerCaster->GetWeaponForAttack(RANGED_ATTACK))
                     m_spellSchoolMask = SpellSchoolMask(1 << pItem->GetTemplate()->GetDamageType());
     }
@@ -2292,7 +2292,7 @@ void Spell::AddUnitTarget(Unit* target, uint32 effectMask, bool checkIfValid /*=
         if (m_auraScaleMask && ihit->EffectMask == m_auraScaleMask && m_caster != target)
         {
             SpellInfo const* auraSpell = m_spellInfo->GetFirstRankSpell();
-            if (uint32(target->getLevel() + 10) >= auraSpell->SpellLevel)
+            if (uint32(target->GetLevel() + 10) >= auraSpell->SpellLevel)
                 ihit->ScaleAura = true;
         }
         return;
@@ -2312,7 +2312,7 @@ void Spell::AddUnitTarget(Unit* target, uint32 effectMask, bool checkIfValid /*=
     if (m_auraScaleMask && targetInfo.EffectMask == m_auraScaleMask && m_caster != target)
     {
         SpellInfo const* auraSpell = m_spellInfo->GetFirstRankSpell();
-        if (uint32(target->getLevel() + 10) >= auraSpell->SpellLevel)
+        if (uint32(target->GetLevel() + 10) >= auraSpell->SpellLevel)
             targetInfo.ScaleAura = true;
     }
 
@@ -2991,7 +2991,7 @@ SpellMissInfo Spell::PreprocessSpellHit(Unit* unit, bool scaleAura, TargetInfo& 
         hitInfo.AuraSpellInfo = m_spellInfo;
         if (scaleAura)
         {
-            if (SpellInfo const* actualSpellInfo = m_spellInfo->GetAuraRankForLevel(unitTarget->getLevel()))
+            if (SpellInfo const* actualSpellInfo = m_spellInfo->GetAuraRankForLevel(unitTarget->GetLevel()))
                 hitInfo.AuraSpellInfo = actualSpellInfo;
 
             for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
@@ -3381,13 +3381,13 @@ SpellCastResult Spell::prepare(SpellCastTargets const& targets, AuraEffect const
         if (!player->GetCommandStatus(CHEAT_CASTTIME))
         {
             // calculate cast time (calculated after first CheckCast check to prevent charge counting for first CheckCast fail)
-            m_casttime = m_spellInfo->CalcCastTime(player->getLevel(), this);
+            m_casttime = m_spellInfo->CalcCastTime(player->GetLevel(), this);
         }
         else
             m_casttime = 0; // Set cast time to 0 if .cheat casttime is enabled.
     }
     else
-        m_casttime = m_spellInfo->CalcCastTime(m_caster->IsUnit() ? m_caster->ToUnit()->getLevel() : 0, this);
+        m_casttime = m_spellInfo->CalcCastTime(m_caster->IsUnit() ? m_caster->ToUnit()->GetLevel() : 0, this);
 
     if (m_caster->IsUnit() && m_caster->ToUnit()->isMoving())
     {
@@ -4014,7 +4014,7 @@ void Spell::_handle_finish_phase()
             if (m_comboPointGain)
                 mover->GainSpellComboPoints(m_comboPointGain);
 
-            if (m_spellInfo->PowerType == POWER_HOLY_POWER && mover->getClass() == CLASS_PALADIN)
+            if (m_spellInfo->PowerType == POWER_HOLY_POWER && mover->GetClass() == CLASS_PALADIN)
                 HandleHolyPower(mover);
         }
 
@@ -4589,7 +4589,7 @@ void Spell::SendSpellGo()
         castFlags |= CAST_FLAG_POWER_LEFT_SELF;
 
     if ((m_caster->GetTypeId() == TYPEID_PLAYER)
-        && (m_caster->ToPlayer()->getClass() == CLASS_DEATH_KNIGHT)
+        && (m_caster->ToPlayer()->GetClass() == CLASS_DEATH_KNIGHT)
         && m_spellInfo->RuneCostID
         && m_spellInfo->PowerType == POWER_RUNE
         && !(_triggeredCastFlags & TRIGGERED_IGNORE_POWER_AND_REAGENT_COST))
@@ -5290,7 +5290,7 @@ SpellCastResult Spell::CheckRuneCost(uint32 runeCostID) const
     if (!player)
         return SPELL_CAST_OK;
 
-    if (player->getClass() != CLASS_DEATH_KNIGHT)
+    if (player->GetClass() != CLASS_DEATH_KNIGHT)
         return SPELL_CAST_OK;
 
     SpellRuneCostEntry const* src = sSpellRuneCostStore.LookupEntry(runeCostID);
@@ -5330,7 +5330,7 @@ SpellCastResult Spell::CheckRuneCost(uint32 runeCostID) const
 
 void Spell::TakeRunePower(SpellMissInfo hitInfo)
 {
-    if (!m_caster->IsPlayer() || m_caster->ToPlayer()->getClass() != CLASS_DEATH_KNIGHT)
+    if (!m_caster->IsPlayer() || m_caster->ToPlayer()->GetClass() != CLASS_DEATH_KNIGHT)
         return;
 
     SpellRuneCostEntry const* runeCostData = sSpellRuneCostStore.LookupEntry(m_spellInfo->RuneCostID);
@@ -5628,12 +5628,12 @@ SpellCastResult Spell::CheckCast(bool strict, uint32* param1 /*= nullptr*/, uint
                 if (playerCaster->HasAuraType(SPELL_AURA_DISABLE_CASTING_EXCEPT_ABILITIES)
                     && !m_spellInfo->HasAttribute(SPELL_ATTR0_USES_RANGED_SLOT)
                     && !m_spellInfo->HasEffect(SPELL_EFFECT_ATTACK)
-                    && !playerCaster->HasAuraTypeWithFamilyFlags(SPELL_AURA_DISABLE_CASTING_EXCEPT_ABILITIES, sChrClassesStore.AssertEntry(playerCaster->getClass())->SpellClassSet, m_spellInfo->SpellFamilyFlags))
+                    && !playerCaster->HasAuraTypeWithFamilyFlags(SPELL_AURA_DISABLE_CASTING_EXCEPT_ABILITIES, sChrClassesStore.AssertEntry(playerCaster->GetClass())->SpellClassSet, m_spellInfo->SpellFamilyFlags))
                     return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
 
                 if (playerCaster->HasAuraType(SPELL_AURA_DISABLE_ATTACKING_EXCEPT_ABILITIES))
                 {
-                    if (!playerCaster->HasAuraTypeWithFamilyFlags(SPELL_AURA_DISABLE_ATTACKING_EXCEPT_ABILITIES, sChrClassesStore.AssertEntry(playerCaster->getClass())->SpellClassSet, m_spellInfo->SpellFamilyFlags))
+                    if (!playerCaster->HasAuraTypeWithFamilyFlags(SPELL_AURA_DISABLE_ATTACKING_EXCEPT_ABILITIES, sChrClassesStore.AssertEntry(playerCaster->GetClass())->SpellClassSet, m_spellInfo->SpellFamilyFlags))
                     {
                         if (m_spellInfo->HasAttribute(SPELL_ATTR0_USES_RANGED_SLOT)
                             || m_spellInfo->IsNextMeleeSwingSpell()
@@ -6021,7 +6021,7 @@ SpellCastResult Spell::CheckCast(bool strict, uint32* param1 /*= nullptr*/, uint
                 if (!learn_spellproto)
                     return SPELL_FAILED_NOT_KNOWN;
 
-                if (m_spellInfo->SpellLevel > pet->getLevel())
+                if (m_spellInfo->SpellLevel > pet->GetLevel())
                     return SPELL_FAILED_LOWLEVEL;
 
                 break;
@@ -6052,7 +6052,7 @@ SpellCastResult Spell::CheckCast(bool strict, uint32* param1 /*= nullptr*/, uint
                     if (!learn_spellproto)
                         return SPELL_FAILED_NOT_KNOWN;
 
-                    if (m_spellInfo->SpellLevel > pet->getLevel())
+                    if (m_spellInfo->SpellLevel > pet->GetLevel())
                         return SPELL_FAILED_LOWLEVEL;
                 }
                 break;
@@ -6160,7 +6160,7 @@ SpellCastResult Spell::CheckCast(bool strict, uint32* param1 /*= nullptr*/, uint
                 uint32 skill = creature->GetCreatureTemplate()->GetRequiredLootSkill();
 
                 int32 skillValue = m_caster->ToPlayer()->GetSkillValue(skill);
-                int32 TargetLevel = m_targets.GetUnitTarget()->getLevel();
+                int32 TargetLevel = m_targets.GetUnitTarget()->GetLevel();
                 int32 ReqValue = (skillValue < 100 ? (TargetLevel-10) * 10 : TargetLevel * 5);
                 if (ReqValue > skillValue)
                     return SPELL_FAILED_LOW_CASTLEVEL;
@@ -6445,7 +6445,7 @@ SpellCastResult Spell::CheckCast(bool strict, uint32* param1 /*= nullptr*/, uint
                         return SPELL_FAILED_TARGET_IS_PLAYER_CONTROLLED;
 
                     int32 value = CalculateDamage(i, target);
-                    if (value && int32(target->getLevel()) > value)
+                    if (value && int32(target->GetLevel()) > value)
                         return SPELL_FAILED_HIGHLEVEL;
                 }
 
@@ -7744,7 +7744,7 @@ bool Spell::CheckEffectTarget(Unit const* target, uint32 eff, Position const* lo
             if (target->GetCharmerGUID())
                 return false;
             if (int32 value = CalculateDamage(eff, target))
-                if ((int32)target->getLevel() > value)
+                if ((int32)target->GetLevel() > value)
                     return false;
             break;
         default:
@@ -8185,7 +8185,7 @@ SpellCastResult Spell::CanOpenLock(uint32 effIndex, uint32 lockId, SkillType& sk
 
                     // Pickpocketing is based on Playerlevels
                     if (m_spellInfo->Id == 1804 && skillId == SKILL_LOCKPICKING)
-                        skillValue = 5 * unitCaster->getLevel();
+                        skillValue = 5 * unitCaster->GetLevel();
 
                     // skill bonus provided by casting spell (mostly item spells)
                     // add the effect base points modifier from the spell cast (cheat lock / skeleton key etc.)
@@ -8759,7 +8759,7 @@ bool WorldObjectSpellTargetCheck::operator()(WorldObject* target) const
             case TARGET_CHECK_RAID_CLASS:
                 if (!refUnit)
                     return false;
-                if (refUnit->getClass() != unitTarget->getClass())
+                if (refUnit->GetClass() != unitTarget->GetClass())
                     return false;
                 [[fallthrough]];
             case TARGET_CHECK_RAID:
