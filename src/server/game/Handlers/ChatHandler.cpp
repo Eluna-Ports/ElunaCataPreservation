@@ -709,6 +709,7 @@ void WorldSession::HandleAddonMessagechatOpcode(WorldPacket& recvData)
         return;
     }
 
+    std::string luaMessage = prefix + "\t" + message;
     switch (type)
     {
         case CHAT_MSG_BATTLEGROUND:
@@ -717,7 +718,7 @@ void WorldSession::HandleAddonMessagechatOpcode(WorldPacket& recvData)
             if (!group || !group->isBGGroup())
                 return;
 #ifdef ELUNA
-            if (!sEluna->OnChat(sender, type, LANG_ADDON, message, group))
+            if (!sEluna->OnChat(sender, type, LANG_ADDON, luaMessage, group))
                 return;
 #endif
 
@@ -733,7 +734,7 @@ void WorldSession::HandleAddonMessagechatOpcode(WorldPacket& recvData)
                 if (Guild* guild = sGuildMgr->GetGuildById(sender->GetGuildId()))
                 {
 #ifdef ELUNA
-                    if (!sEluna->OnChat(sender, type, LANG_ADDON, message, guild))
+                    if (!sEluna->OnChat(sender, type, LANG_ADDON, luaMessage, guild))
                         return;
 #endif
                     guild->BroadcastAddonToGuild(this, type == CHAT_MSG_OFFICER, message, prefix);
@@ -748,7 +749,7 @@ void WorldSession::HandleAddonMessagechatOpcode(WorldPacket& recvData)
             if (!receiver)
                 break;
 #ifdef ELUNA
-            if (!sEluna->OnChat(sender, type, LANG_ADDON, message, receiver))
+            if (!sEluna->OnChat(sender, type, LANG_ADDON, luaMessage, receiver))
                 return;
 #endif
 
@@ -763,7 +764,7 @@ void WorldSession::HandleAddonMessagechatOpcode(WorldPacket& recvData)
             if (!group || group->isBGGroup())
                 break;
 #ifdef ELUNA
-            if (!sEluna->OnChat(sender, type, LANG_ADDON, message, group))
+            if (!sEluna->OnChat(sender, type, LANG_ADDON, luaMessage, group))
                 return;
 #endif
 
